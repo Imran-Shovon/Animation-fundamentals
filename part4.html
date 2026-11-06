@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Modern Web Motion — Part 4 · Web Motion Playground</title>
+<meta content="Part 4 of the Web Motion Playground: 44 more animation patterns — new CSS features (@starting-style, popover, dialog, anchor positioning, height:auto, linear() springs), forms, gestures, cursors, scroll layouts, data viz and games — each with live code." name="description"/>
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="part4.css"/>
+</head>
+<body>
+<div class="page-progress" id="pageProgress"></div>
+<!-- ================= HERO ================= -->
+<header class="hero">
+<div class="hero-blob b1"></div><div class="hero-blob b2"></div><div class="hero-blob b3"></div>
+<div class="hero-inner">
+<p class="eyebrow">Part 4 · Interactive reference · HTML + CSS + JS</p>
+<h1>
+<span class="word" style="--i:0">Modern</span>
+<span class="word" style="--i:1"><span class="grad-text">Web</span></span>
+<span class="word" style="--i:2"><span class="grad-text">Motion</span></span>
+</h1>
+<p class="lead">The final part of the catalog: <strong>44 more patterns</strong> — demos 365 to 408. It opens with the <strong>newest CSS features</strong> for motion, then covers forms, hold &amp; slide gestures, drag and fling, cursor effects, scroll layouts, page loaders, data viz and small games. No libraries, no images — and every demo has a <strong>Show code</strong> button.</p>
+<div class="hero-actions">
+<a class="btn" href="index.html">← Parts 1 &amp; 2</a>
+<a class="btn" href="more.html">← Part 3</a>
+<a class="btn primary" href="#css-new">Start browsing ↓</a>
+<button class="btn" id="pauseAll">⏸ Pause all motion</button>
+</div>
+<p class="motion-note">Your system asks for reduced motion, so animations start paused. Press "Play all motion" to watch them.</p>
+</div>
+</header>
+<!-- ================= TABLE OF CONTENTS ================= -->
+<nav aria-label="Sections" class="toc">
+<ul>
+<li><a href="index.html">← Parts 1 &amp; 2</a></li>
+<li><a href="more.html">← Part 3</a></li>
+<li><a href="#css-new">Modern CSS</a></li>
+<li><a href="#forms">Forms</a></li>
+<li><a href="#micro-3">Micro III</a></li>
+<li><a href="#gestures">Drag & Gestures</a></li>
+<li><a href="#cursor">Cursor</a></li>
+<li><a href="#scroll-3">Scroll layouts</a></li>
+<li><a href="#page-level">Page loaders</a></li>
+<li><a href="#media-3">Media III</a></li>
+<li><a href="#data-2">Data viz II</a></li>
+<li><a href="#games">Games & Commerce</a></li>
+</ul>
+</nav>
+<main>
+<!-- ================= 37 CSS-NEW ================= -->
+<section class="section" id="css-new">
+<div class="sec-head reveal"><span class="sec-num">37</span><h2>Newer CSS features for motion</h2></div>
+<p class="sec-intro reveal">Recent CSS removes most of the JavaScript that motion used to need: animating elements in and out of <code>display: none</code>, native dialogs and popovers that animate, transitions to <code>height: auto</code>, tooltips that position themselves, shared-element transitions and real spring curves. Each demo says which browsers support it; where a feature is missing, the element still works, just without the motion.</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Modern CSS</span><span class="badge js">JS</span><span class="count">365 / 408</span></div><h3>Animate from <code>display: none</code> with <code>@starting-style</code></h3><p class="desc">Toggling <code>display</code> used to kill transitions. <code>@starting-style</code> gives the browser a "before" state for the first frame, and <code>transition-behavior: allow-discrete</code> keeps the element displayed until its exit transition ends. <b>Chrome/Edge 117+, Safari 17.5+, Firefox 129+.</b></p><p class="desc use"><b>On the web:</b> toasts, menus, cards that are added or shown — no setTimeout tricks.</p><div class="demo-box"><div class="stage">
+<div class="p4-ss" id="p4Ss"><button type="button" class="p4-btn">Toggle card</button><div class="p4-ss-card"><b>Hello 👋</b><span>I was display: none a moment ago.</span></div></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>.card { display: none; opacity: 0; transition: opacity .35s, display .35s allow-discrete; }
+.card.on { display: block; opacity: 1; }
+@starting-style { .card.on { opacity: 0; } }      /* the first frame after display: block */</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-ss" id="p4Ss"&gt;&lt;button type="button" class="p4-btn"&gt;Toggle card&lt;/button&gt;&lt;div class="p4-ss-card"&gt;&lt;b&gt;Hello 👋&lt;/b&gt;&lt;span&gt;I was display: none a moment ago.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-btn { padding: 9px 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); font-weight: 600; }
+.p4-btn.primary { background: var(--violet); border-color: var(--violet); }
+.p4-ss { display: grid; justify-items: center; gap: 14px; min-height: 140px; align-content: start; }
+.p4-ss-card { display: none; width: 240px; padding: 16px; border-radius: 14px; background: var(--grad); text-align: center;
+  opacity: 0; transform: translateY(14px) scale(.94);
+  transition: opacity .35s, transform .4s var(--ease-out), display .4s allow-discrete; }
+.p4-ss-card b { display: block; font-size: 1.1rem; }
+.p4-ss-card span { font-size: .82rem; }
+.p4-ss-card.on { display: block; opacity: 1; transform: none; }
+@starting-style { .p4-ss-card.on { opacity: 0; transform: translateY(14px) scale(.94); } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const ss = $('#p4Ss');
+  $('button', ss).addEventListener('click', () =&gt; $('.p4-ss-card', ss).classList.toggle('on'));
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Modern CSS</span><span class="badge js">JS</span><span class="count">366 / 408</span></div><h3>Animated native <code>&lt;dialog&gt;</code></h3><p class="desc">A real modal — focus trapping, Esc to close and the top layer come free with <code>showModal()</code>. The dialog and its <code>::backdrop</code> fade and scale <b>in and out</b>; <code>overlay</code> and <code>display</code> transition with <code>allow-discrete</code> so the exit can play. <b>Exit animation: Chrome/Edge 117+; others close instantly.</b></p><p class="desc use"><b>On the web:</b> confirmations, sign-in modals, settings sheets.</p><div class="demo-box"><div class="stage">
+<button type="button" class="p4-btn primary" id="p4DlgOpen">Delete project…</button>
+<dialog class="p4-dlg" id="p4Dlg" aria-labelledby="p4DlgT">
+  <h4 id="p4DlgT">Delete “Website redesign”?</h4>
+  <p>This removes 24 files for everyone. You can't undo this.</p>
+  <form method="dialog"><button class="p4-btn" value="cancel">Cancel</button><button class="p4-btn danger" value="delete">Delete</button></form>
+</dialog>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>dialog { transition: opacity .3s, transform .3s, overlay .3s allow-discrete, display .3s allow-discrete; }
+dialog[open] { opacity: 1; transform: none; }
+@starting-style { dialog[open] { opacity: 0; transform: scale(.95); } }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;button type="button" class="p4-btn primary" id="p4DlgOpen"&gt;Delete project…&lt;/button&gt;
+&lt;dialog class="p4-dlg" id="p4Dlg" aria-labelledby="p4DlgT"&gt;
+  &lt;h4 id="p4DlgT"&gt;Delete “Website redesign”?&lt;/h4&gt;
+  &lt;p&gt;This removes 24 files for everyone. You can't undo this.&lt;/p&gt;
+  &lt;form method="dialog"&gt;&lt;button class="p4-btn" value="cancel"&gt;Cancel&lt;/button&gt;&lt;button class="p4-btn danger" value="delete"&gt;Delete&lt;/button&gt;&lt;/form&gt;
+&lt;/dialog&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-dlg { width: min(340px, 90vw); padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel-2); color: var(--text);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .6); opacity: 0; transform: translateY(16px) scale(.95);
+  transition: opacity .3s, transform .3s var(--ease-out), overlay .3s allow-discrete, display .3s allow-discrete; }
+.p4-dlg[open] { opacity: 1; transform: none; }
+@starting-style { .p4-dlg[open] { opacity: 0; transform: translateY(16px) scale(.95); } }
+.p4-dlg::backdrop { background: rgba(5, 6, 10, 0); transition: background-color .3s, overlay .3s allow-discrete, display .3s allow-discrete; }
+.p4-dlg[open]::backdrop { background: rgba(5, 6, 10, .7); }
+@starting-style { .p4-dlg[open]::backdrop { background: rgba(5, 6, 10, 0); } }
+.p4-dlg h4 { font-size: 1.05rem; margin-bottom: 6px; }
+.p4-dlg p { color: var(--muted); font-size: .88rem; margin-bottom: 16px; }
+.p4-dlg form { display: flex; justify-content: flex-end; gap: 8px; }
+.p4-btn.danger { background: #e11d48; border-color: #e11d48; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const dlg = $('#p4Dlg');
+  $('#p4DlgOpen').addEventListener('click', () =&gt; dlg.showModal());
+  dlg.addEventListener('click', e =&gt; { if (e.target === dlg) dlg.close(); }); // click on the backdrop closes it
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Modern CSS</span><span class="count">367 / 408</span></div><h3>Popover API — no JavaScript</h3><p class="desc"><code>popover</code> + <code>popovertarget</code> give you a toggleable panel with light-dismiss (click outside or Esc) and the top layer, with <b>zero JavaScript</b>. <code>:popover-open</code> and <code>@starting-style</code> animate it. <b>Popover: all modern browsers; exit animation: Chromium.</b></p><p class="desc use"><b>On the web:</b> notification panels, menus, pickers, teaching tips.</p><div class="demo-box"><div class="stage">
+<button type="button" class="p4-btn" popovertarget="p4Pop">🔔 Notifications <span class="p4-pop-dot">3</span></button>
+<div popover id="p4Pop" class="p4-pop">
+  <b>Notifications</b>
+  <p style="--i:0">🎉 Your site went live</p><p style="--i:1">💬 Ana commented on "Hero"</p><p style="--i:2">⭐ 12 new stars this week</p>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;button popovertarget="panel"&gt;Notifications&lt;/button&gt;
+&lt;div popover id="panel"&gt;…&lt;/div&gt;
+[popover]:popover-open { opacity: 1; transform: none; }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;button type="button" class="p4-btn" popovertarget="p4Pop"&gt;🔔 Notifications &lt;span class="p4-pop-dot"&gt;3&lt;/span&gt;&lt;/button&gt;
+&lt;div popover id="p4Pop" class="p4-pop"&gt;
+  &lt;b&gt;Notifications&lt;/b&gt;
+  &lt;p style="--i:0"&gt;🎉 Your site went live&lt;/p&gt;&lt;p style="--i:1"&gt;💬 Ana commented on "Hero"&lt;/p&gt;&lt;p style="--i:2"&gt;⭐ 12 new stars this week&lt;/p&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.dot { width: 26px; height: 26px; border-radius: 50%; background: var(--cyan); }
+
+.p4-pop-dot { display: inline-block; min-width: 18px; margin-left: 4px; padding: 0 5px; border-radius: 9px; background: var(--pink); font-size: .7rem; line-height: 18px; }
+.p4-pop { margin: auto; width: min(290px, 90vw); padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel-2); color: var(--text); box-shadow: 0 20px 50px rgba(0, 0, 0, .55);
+  opacity: 0; transform: translateY(-10px) scale(.92);
+  transition: opacity .25s, transform .3s var(--ease-back), overlay .3s allow-discrete, display .3s allow-discrete; }
+.p4-pop:popover-open { opacity: 1; transform: none; }
+@starting-style { .p4-pop:popover-open { opacity: 0; transform: translateY(-10px) scale(.92); } }
+.p4-pop b { display: block; margin-bottom: 8px; }
+.p4-pop p { padding: 8px 10px; border-radius: 8px; background: var(--panel); font-size: .85rem; margin-top: 6px; opacity: 0; transform: translateX(-8px); transition: opacity .3s, transform .3s var(--ease-out); }
+.p4-pop:popover-open p { opacity: 1; transform: none; transition-delay: calc(.08s + var(--i) * 50ms); }
+@starting-style { .p4-pop:popover-open p { opacity: 0; transform: translateX(-8px); } }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Modern CSS</span><span class="count">368 / 408</span></div><h3>Transition to <code>height: auto</code></h3><p class="desc"><code>interpolate-size: allow-keywords</code> lets <code>height</code> animate between <code>0</code> and <code>auto</code>, and <code>::details-content</code> lets you style the hidden part of a <code>&lt;details&gt;</code>. Result: a <b>smooth native accordion</b> in CSS only. <b>Chrome/Edge 131+; elsewhere it opens instantly.</b></p><p class="desc use"><b>On the web:</b> FAQs, settings groups, "show more" sections.</p><div class="demo-box"><div class="stage">
+<div class="p4-hauto">
+  <details><summary>Is it really CSS only?</summary><p>Yes. The browser measures the auto height for you and animates to it.</p></details>
+  <details><summary>What about older browsers?</summary><p>They ignore the new properties, so the panel simply opens without animation.</p></details>
+  <details><summary>Does it work for width too?</summary><p>It works for any size keyword: auto, min-content, max-content, fit-content.</p></details>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>:root { interpolate-size: allow-keywords; }
+details::details-content { height: 0; overflow: clip; transition: height .35s, content-visibility .35s allow-discrete; }
+details[open]::details-content { height: auto; }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-hauto"&gt;
+  &lt;details&gt;&lt;summary&gt;Is it really CSS only?&lt;/summary&gt;&lt;p&gt;Yes. The browser measures the auto height for you and animates to it.&lt;/p&gt;&lt;/details&gt;
+  &lt;details&gt;&lt;summary&gt;What about older browsers?&lt;/summary&gt;&lt;p&gt;They ignore the new properties, so the panel simply opens without animation.&lt;/p&gt;&lt;/details&gt;
+  &lt;details&gt;&lt;summary&gt;Does it work for width too?&lt;/summary&gt;&lt;p&gt;It works for any size keyword: auto, min-content, max-content, fit-content.&lt;/p&gt;&lt;/details&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-hauto { interpolate-size: allow-keywords; width: min(360px, 92%); display: grid; gap: 8px; }
+.p4-hauto details { border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+.p4-hauto summary { list-style: none; cursor: pointer; padding: 11px 14px; font-weight: 600; font-size: .9rem; display: flex; justify-content: space-between; }
+.p4-hauto summary::-webkit-details-marker { display: none; }
+.p4-hauto summary::after { content: "+"; color: var(--violet); font-weight: 800; transition: transform .3s var(--ease-out); }
+.p4-hauto details[open] summary::after { transform: rotate(45deg); }
+.p4-hauto details::details-content { height: 0; overflow: clip; transition: height .35s var(--ease-out), content-visibility .35s allow-discrete; }
+.p4-hauto details[open]::details-content { height: auto; }
+.p4-hauto p { padding: 0 14px 12px; color: var(--muted); font-size: .84rem; }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Modern CSS</span><span class="count">369 / 408</span></div><h3>Tooltips with anchor positioning</h3><p class="desc">The tooltip is tied to its button with <code>anchor-name</code> / <code>position-anchor</code> and placed with <code>position-area: top</code>. <code>position-try-fallbacks: flip-block</code> <b>flips it below</b> when there's no room above — scroll the button to the top of your window to see it. <b>Chrome/Edge 125+; other browsers use a plain absolute fallback.</b></p><p class="desc use"><b>On the web:</b> tooltips, popovers and menus that never get cut off.</p><div class="demo-box"><div class="stage">
+<span class="hint">hover / focus a button</span>
+<div class="p4-anc">
+  <span><button type="button" class="p4-btn" style="anchor-name: --p4-a1">💾</button><span class="p4-tip" style="position-anchor: --p4-a1">Save</span></span>
+  <span><button type="button" class="p4-btn" style="anchor-name: --p4-a2">📤</button><span class="p4-tip" style="position-anchor: --p4-a2">Share with team</span></span>
+  <span><button type="button" class="p4-btn" style="anchor-name: --p4-a3">🗑</button><span class="p4-tip" style="position-anchor: --p4-a3">Move to trash</span></span>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>button { anchor-name: --save; }
+.tip { position: fixed; position-anchor: --save; position-area: top;
+       position-try-fallbacks: flip-block; }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;hover / focus a button&lt;/span&gt;
+&lt;div class="p4-anc"&gt;
+  &lt;span&gt;&lt;button type="button" class="p4-btn" style="anchor-name: --p4-a1"&gt;💾&lt;/button&gt;&lt;span class="p4-tip" style="position-anchor: --p4-a1"&gt;Save&lt;/span&gt;&lt;/span&gt;
+  &lt;span&gt;&lt;button type="button" class="p4-btn" style="anchor-name: --p4-a2"&gt;📤&lt;/button&gt;&lt;span class="p4-tip" style="position-anchor: --p4-a2"&gt;Share with team&lt;/span&gt;&lt;/span&gt;
+  &lt;span&gt;&lt;button type="button" class="p4-btn" style="anchor-name: --p4-a3"&gt;🗑&lt;/button&gt;&lt;span class="p4-tip" style="position-anchor: --p4-a3"&gt;Move to trash&lt;/span&gt;&lt;/span&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-anc { display: flex; gap: 14px; }
+.p4-anc &gt; span { position: relative; }
+.p4-anc .p4-btn { width: 48px; height: 48px; font-size: 1.2rem; }
+.p4-tip { position: absolute; bottom: calc(100% + 8px); left: 50%; translate: -50% 0; white-space: nowrap; pointer-events: none;
+  padding: 6px 10px; border-radius: 8px; background: #e9ebf3; color: #0c0e14; font-size: .78rem; font-weight: 600;
+  opacity: 0; transform: translateY(4px) scale(.9); transition: opacity .18s, transform .22s var(--ease-back); }
+@supports (anchor-name: --a) {
+  .p4-tip { position: fixed; inset: auto; translate: none; margin: 0; position-area: top; margin-bottom: 8px; position-try-fallbacks: flip-block; }
+}
+.p4-anc button:hover + .p4-tip, .p4-anc button:focus-visible + .p4-tip { opacity: 1; transform: none; }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Modern CSS</span><span class="badge js">JS</span><span class="count">370 / 408</span></div><h3>Shared-element transition (View Transitions)</h3><p class="desc">Give the thumbnail and the detail header the same <code>view-transition-name</code>, change the DOM inside <code>document.startViewTransition()</code>, and the browser <b>morphs one into the other</b>. For multi-page sites, <code>@view-transition { navigation: auto; }</code> does the same between pages. <b>Chrome/Edge 111+, Safari 18+; elsewhere it swaps instantly.</b></p><p class="desc use"><b>On the web:</b> product grid → product page, playlist → song, gallery → photo.</p><div class="demo-box"><div class="stage">
+<div class="p4-vt" id="p4Vt">
+  <div class="p4-vt-list"><button type="button" style="--c:linear-gradient(135deg,#7c5cff,#ff5c8a)" data-t="Aurora"><i></i><span>Aurora</span></button><button type="button" style="--c:linear-gradient(135deg,#22d3ee,#34d399)" data-t="Lagoon"><i></i><span>Lagoon</span></button><button type="button" style="--c:linear-gradient(135deg,#fbbf24,#f97316)" data-t="Ember"><i></i><span>Ember</span></button></div>
+  <div class="p4-vt-detail"><i class="p4-vt-hero"></i><h4></h4><p>Click "Back" and the header shrinks back into its card.</p><button type="button" class="p4-btn">← Back</button></div>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>thumb.style.viewTransitionName = 'hero';
+document.startViewTransition(() =&gt; {
+  thumb.style.viewTransitionName = '';  header.style.viewTransitionName = 'hero';
+  showDetail();
+});</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-vt" id="p4Vt"&gt;
+  &lt;div class="p4-vt-list"&gt;&lt;button type="button" style="--c:linear-gradient(135deg,#7c5cff,#ff5c8a)" data-t="Aurora"&gt;&lt;i&gt;&lt;/i&gt;&lt;span&gt;Aurora&lt;/span&gt;&lt;/button&gt;&lt;button type="button" style="--c:linear-gradient(135deg,#22d3ee,#34d399)" data-t="Lagoon"&gt;&lt;i&gt;&lt;/i&gt;&lt;span&gt;Lagoon&lt;/span&gt;&lt;/button&gt;&lt;button type="button" style="--c:linear-gradient(135deg,#fbbf24,#f97316)" data-t="Ember"&gt;&lt;i&gt;&lt;/i&gt;&lt;span&gt;Ember&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;
+  &lt;div class="p4-vt-detail"&gt;&lt;i class="p4-vt-hero"&gt;&lt;/i&gt;&lt;h4&gt;&lt;/h4&gt;&lt;p&gt;Click "Back" and the header shrinks back into its card.&lt;/p&gt;&lt;button type="button" class="p4-btn"&gt;← Back&lt;/button&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-vt { width: min(380px, 94%); }
+.p4-vt-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.p4-vt-list button { padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); overflow: hidden; text-align: left; }
+.p4-vt-list i { display: block; height: 80px; background: var(--c); }
+.p4-vt-list span { display: block; padding: 8px 10px; font-size: .85rem; font-weight: 600; }
+.p4-vt-detail { display: none; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.p4-vt-hero { display: block; height: 110px; background: var(--c); }
+.p4-vt-detail h4 { padding: 10px 14px 0; font-size: 1.2rem; }
+.p4-vt-detail p { padding: 2px 14px 8px; font-size: .8rem; color: var(--muted); }
+.p4-vt-detail .p4-btn { margin: 0 14px 12px; padding: 6px 12px; font-size: .8rem; }
+.p4-vt.detail .p4-vt-list { display: none; }
+.p4-vt.detail .p4-vt-detail { display: block; }
+::view-transition-group(p4-hero) { animation-duration: .5s; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const app = $('#p4Vt'), detail = $('.p4-vt-detail', app), hero = $('.p4-vt-hero', detail);
+  let thumb = null;
+  const vt = fn =&gt; (document.startViewTransition ? document.startViewTransition(fn).finished : (fn(), Promise.resolve()));
+  $$('.p4-vt-list button', app).forEach(card =&gt; card.addEventListener('click', () =&gt; {
+    thumb = $('i', card);
+    thumb.style.viewTransitionName = 'p4-hero';
+    vt(() =&gt; {
+      thumb.style.viewTransitionName = '';
+      hero.style.viewTransitionName = 'p4-hero';
+      detail.style.setProperty('--c', card.style.getPropertyValue('--c'));
+      $('h4', detail).textContent = card.dataset.t;
+      app.classList.add('detail');
+    });
+  }));
+  $('.p4-btn', detail).addEventListener('click', () =&gt; {
+    vt(() =&gt; {
+      hero.style.viewTransitionName = '';
+      thumb.style.viewTransitionName = 'p4-hero';
+      app.classList.remove('detail');
+    }).then(() =&gt; { thumb.style.viewTransitionName = ''; });
+  });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Modern CSS</span><span class="count">371 / 408</span></div><h3>Real springs with <code>linear()</code></h3><p class="desc"><code>cubic-bezier()</code> can overshoot once at most. <code>linear()</code> takes <b>any list of points</b>, so a pre-computed spring or bounce curve becomes a plain CSS easing — no physics library. <b>All modern browsers (Chrome 113+, Safari 17.2+, Firefox 112+).</b></p><p class="desc use"><b>On the web:</b> toggles, drawers, sheets and anything that should feel physical.</p><div class="demo-box"><div class="stage">
+<div class="p4-race">
+  <div style="--fn: cubic-bezier(.22, 1, .36, 1)"><span>ease-out</span><i></i></div>
+  <div style="--fn: linear(0, 0.243, 0.501, 0.733, 0.919, 1.049, 1.127, 1.16, 1.161, 1.139, 1.107, 1.072, 1.04, 1.014, 0.995, 0.984, 0.979, 0.978, 0.981, 0.985, 0.99, 0.994, 0.998, 1, 1.002, 1.003, 1.003, 1.003, 1.002, 1.002, 1.001, 1, 1)"><span>linear() spring</span><i></i></div>
+  <div style="--fn: linear(0, 0.005, 0.019, 0.043, 0.076, 0.118, 0.17, 0.232, 0.303, 0.383, 0.473, 0.572, 0.681, 0.799, 0.926, 0.97, 0.91, 0.86, 0.819, 0.788, 0.766, 0.753, 0.75, 0.757, 0.772, 0.798, 0.833, 0.877, 0.931, 0.994, 0.973, 0.952, 0.94, 0.938, 0.945, 0.962, 0.988, 0.991, 0.985, 0.988, 1)"><span>linear() bounce</span><i></i></div>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>--spring: linear(0, .243, .501, .733, .919, 1.049, 1.127, 1.16, 1.161, 1.139, … , 1);
+.ball { transition: transform .9s var(--spring); }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-race"&gt;
+  &lt;div style="--fn: cubic-bezier(.22, 1, .36, 1)"&gt;&lt;span&gt;ease-out&lt;/span&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div style="--fn: linear(0, 0.243, 0.501, 0.733, 0.919, 1.049, 1.127, 1.16, 1.161, 1.139, 1.107, 1.072, 1.04, 1.014, 0.995, 0.984, 0.979, 0.978, 0.981, 0.985, 0.99, 0.994, 0.998, 1, 1.002, 1.003, 1.003, 1.003, 1.002, 1.002, 1.001, 1, 1)"&gt;&lt;span&gt;linear() spring&lt;/span&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div style="--fn: linear(0, 0.005, 0.019, 0.043, 0.076, 0.118, 0.17, 0.232, 0.303, 0.383, 0.473, 0.572, 0.681, 0.799, 0.926, 0.97, 0.91, 0.86, 0.819, 0.788, 0.766, 0.753, 0.75, 0.757, 0.772, 0.798, 0.833, 0.877, 0.931, 0.994, 0.973, 0.952, 0.94, 0.938, 0.945, 0.962, 0.988, 0.991, 0.985, 0.988, 1)"&gt;&lt;span&gt;linear() bounce&lt;/span&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-race { width: 100%; padding: 0 26px; display: grid; gap: 16px; }
+.p4-race div { position: relative; height: 40px; border-bottom: 1px dashed #343b4f; container-type: inline-size; }
+.p4-race span { position: absolute; right: 0; top: 0; font: 600 .68rem var(--mono); color: var(--muted); }
+.p4-race i { position: absolute; left: 0; bottom: 6px; width: 22px; height: 22px; border-radius: 50%; background: var(--grad); animation: p4-race 2.6s infinite; }
+@keyframes p4-race {
+  0%, 12% { transform: translateX(0); animation-timing-function: var(--fn); }
+  62%, 100% { transform: translateX(calc(85cqw - 22px)); }
+}</code></pre></div></div></div></article>
+</div>
+</section>
+<!-- ================= 38 FORMS ================= -->
+<section class="section" id="forms">
+<div class="sec-head reveal"><span class="sec-num">38</span><h2>Form animations</h2></div>
+<p class="sec-intro reveal">Forms are where users get frustrated, so motion here is mostly <strong>feedback</strong>: you typed it right, you're 2 of 3 steps in, the upload is 60% done. Keep it fast, and never animate in a way that moves the field the user is typing in.</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Form</span><span class="badge js">JS</span><span class="count">372 / 408</span></div><h3>One-time code input</h3><p class="desc">Each digit <b>pops into its box</b> and focus jumps to the next one; Backspace steps back, and pasting a full code fills every box. A wrong code shakes and clears, the right one ripples green.</p><p class="desc use"><b>On the web:</b> 2FA, phone verification, magic-link sign-in.</p><div class="demo-box"><div class="stage">
+<div class="p4-otp-wrap"><div class="p4-otp" id="p4Otp"><input inputmode="numeric" maxlength="1" aria-label="Digit 1" /><input inputmode="numeric" maxlength="1" aria-label="Digit 2" /><input inputmode="numeric" maxlength="1" aria-label="Digit 3" /><input inputmode="numeric" maxlength="1" aria-label="Digit 4" /><input inputmode="numeric" maxlength="1" aria-label="Digit 5" /><input inputmode="numeric" maxlength="1" aria-label="Digit 6" /></div><small>Demo code: <b>123456</b></small></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-otp-wrap"&gt;&lt;div class="p4-otp" id="p4Otp"&gt;&lt;input inputmode="numeric" maxlength="1" aria-label="Digit 1" /&gt;&lt;input inputmode="numeric" maxlength="1" aria-label="Digit 2" /&gt;&lt;input inputmode="numeric" maxlength="1" aria-label="Digit 3" /&gt;&lt;input inputmode="numeric" maxlength="1" aria-label="Digit 4" /&gt;&lt;input inputmode="numeric" maxlength="1" aria-label="Digit 5" /&gt;&lt;input inputmode="numeric" maxlength="1" aria-label="Digit 6" /&gt;&lt;/div&gt;&lt;small&gt;Demo code: &lt;b&gt;123456&lt;/b&gt;&lt;/small&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-otp-wrap { display: grid; justify-items: center; gap: 12px; }
+.p4-otp-wrap small { color: var(--muted); font-size: .78rem; }
+.p4-otp { display: flex; gap: 8px; }
+.p4-otp input { width: 42px; height: 52px; border-radius: 10px; border: 2px solid var(--line); background: var(--panel); color: var(--text); text-align: center; font: 700 1.4rem var(--mono); outline: none; transition: border-color .2s, transform .2s; }
+.p4-otp input:focus { border-color: var(--violet); transform: translateY(-2px); }
+.p4-otp input.filled { animation: p4-pop .25s var(--ease-back); }
+.p4-otp.err { animation: p4-shake .4s; }
+.p4-otp.err input { border-color: var(--pink); }
+.p4-otp.ok input { border-color: var(--green); background: rgba(52, 211, 153, .12); animation: p4-pop .35s var(--ease-back) both; }
+.p4-otp.ok input:nth-child(2) { animation-delay: .05s; } .p4-otp.ok input:nth-child(3) { animation-delay: .1s; }
+.p4-otp.ok input:nth-child(4) { animation-delay: .15s; } .p4-otp.ok input:nth-child(5) { animation-delay: .2s; } .p4-otp.ok input:nth-child(6) { animation-delay: .25s; }
+@keyframes p4-pop { 0% { transform: scale(.8); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes p4-shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+@media (max-width: 420px) { .p4-otp input { width: 36px; height: 46px; } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const otp = $('#p4Otp'), boxes = $$('input', otp);
+  const check = () =&gt; {
+    const code = boxes.map(b =&gt; b.value).join('');
+    if (code.length &lt; boxes.length) return;
+    if (code === '123456') { otp.classList.add('ok'); boxes.forEach(b =&gt; b.blur()); }
+    else { restart(otp, 'err'); setTimeout(() =&gt; { boxes.forEach(b =&gt; (b.value = '')); otp.classList.remove('err'); boxes[0].focus(); }, 450); }
+  };
+  boxes.forEach((b, i) =&gt; {
+    b.addEventListener('input', () =&gt; {
+      otp.classList.remove('ok');
+      b.value = b.value.replace(/\D/g, '').slice(-1);
+      if (b.value) { restart(b, 'filled'); boxes[i + 1]?.focus(); }
+      check();
+    });
+    b.addEventListener('keydown', e =&gt; { if (e.key === 'Backspace' &amp;&amp; !b.value &amp;&amp; i) boxes[i - 1].focus(); });
+    b.addEventListener('paste', e =&gt; {
+      e.preventDefault();
+      const digits = (e.clipboardData.getData('text').match(/\d/g) || []).slice(0, boxes.length);
+      digits.forEach((d, k) =&gt; { boxes[k].value = d; restart(boxes[k], 'filled'); });
+      boxes[Math.min(digits.length, boxes.length - 1)].focus(); check();
+    });
+  });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Form</span><span class="badge js">JS</span><span class="count">373 / 408</span></div><h3>Password strength meter</h3><p class="desc">Four segments <b>fill and change color</b> as the password gets stronger, and each rule <b>ticks off with a pop</b> as you meet it. The score is one attribute; CSS does all the styling.</p><p class="desc use"><b>On the web:</b> sign-up and change-password forms.</p><div class="demo-box"><div class="stage">
+<div class="p4-pw" id="p4Pw" data-score="0">
+  <input type="password" placeholder="Choose a password" aria-label="Password" />
+  <div class="p4-pw-bar"><i></i><i></i><i></i><i></i></div>
+  <ul><li>8+ characters</li><li>A number</li><li>An uppercase letter</li><li>A symbol</li></ul>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>meter.dataset.score = rules.filter(r =&gt; r.test(value)).length;   /* 0–4 */
+[data-score="3"] i:nth-child(-n+3) { background: var(--amber); transform: scaleX(1); }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-pw" id="p4Pw" data-score="0"&gt;
+  &lt;input type="password" placeholder="Choose a password" aria-label="Password" /&gt;
+  &lt;div class="p4-pw-bar"&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;ul&gt;&lt;li&gt;8+ characters&lt;/li&gt;&lt;li&gt;A number&lt;/li&gt;&lt;li&gt;An uppercase letter&lt;/li&gt;&lt;li&gt;A symbol&lt;/li&gt;&lt;/ul&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-pw { width: min(300px, 90%); display: grid; gap: 10px; --c: var(--pink); }
+.p4-pw input { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font: inherit; outline: none; }
+.p4-pw-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.p4-pw-bar i { height: 6px; border-radius: 3px; background: #2a3142; position: relative; overflow: hidden; }
+.p4-pw-bar i::after { content: ""; position: absolute; inset: 0; background: var(--c); transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease-out), background-color .3s; }
+.p4-pw[data-score="1"] i:nth-child(-n+1)::after, .p4-pw[data-score="2"] i:nth-child(-n+2)::after,
+.p4-pw[data-score="3"] i:nth-child(-n+3)::after, .p4-pw[data-score="4"] i::after { transform: scaleX(1); }
+.p4-pw[data-score="2"] { --c: var(--amber); } .p4-pw[data-score="3"] { --c: var(--cyan); } .p4-pw[data-score="4"] { --c: var(--green); }
+.p4-pw ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; font-size: .78rem; color: var(--muted); }
+.p4-pw li::before { content: "○"; display: inline-block; width: 1.2em; transition: transform .3s var(--ease-back), color .2s; }
+.p4-pw li.ok { color: var(--text); }
+.p4-pw li.ok::before { content: "✓"; color: var(--green); transform: scale(1.3); }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const pw = $('#p4Pw'), input = $('input', pw), items = $$('li', pw);
+  const rules = [/.{8,}/, /\d/, /[A-Z]/, /[^A-Za-z0-9]/];
+  input.addEventListener('input', () =&gt; {
+    const met = rules.map(r =&gt; r.test(input.value));
+    met.forEach((ok, i) =&gt; items[i].classList.toggle('ok', ok));
+    pw.dataset.score = met.filter(Boolean).length;
+  });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Form</span><span class="badge js">JS</span><span class="count">374 / 408</span></div><h3>Multi-step form</h3><p class="desc">Steps <b>slide sideways</b> — forward to the left, back to the right — while the progress bar grows. The direction of motion matches the direction of travel through the form.</p><p class="desc use"><b>On the web:</b> checkout, onboarding, booking flows.</p><div class="demo-box"><div class="stage">
+<div class="p4-steps" id="p4Steps">
+  <div class="p4-steps-bar"><i></i></div>
+  <div class="p4-steps-view"><div class="p4-steps-track">
+    <fieldset><legend>1 · Your name</legend><input placeholder="Ada Lovelace" aria-label="Name" /></fieldset>
+    <fieldset><legend>2 · Pick a plan</legend><label><input type="radio" name="p4plan" checked /> Free</label><label><input type="radio" name="p4plan" /> Pro</label></fieldset>
+    <fieldset class="p4-steps-done"><legend>3 · All set</legend><b>✓</b></fieldset>
+  </div></div>
+  <div class="p4-steps-nav"><button type="button" class="p4-btn" data-back>Back</button><button type="button" class="p4-btn primary" data-next>Next</button></div>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-steps" id="p4Steps"&gt;
+  &lt;div class="p4-steps-bar"&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="p4-steps-view"&gt;&lt;div class="p4-steps-track"&gt;
+    &lt;fieldset&gt;&lt;legend&gt;1 · Your name&lt;/legend&gt;&lt;input placeholder="Ada Lovelace" aria-label="Name" /&gt;&lt;/fieldset&gt;
+    &lt;fieldset&gt;&lt;legend&gt;2 · Pick a plan&lt;/legend&gt;&lt;label&gt;&lt;input type="radio" name="p4plan" checked /&gt; Free&lt;/label&gt;&lt;label&gt;&lt;input type="radio" name="p4plan" /&gt; Pro&lt;/label&gt;&lt;/fieldset&gt;
+    &lt;fieldset class="p4-steps-done"&gt;&lt;legend&gt;3 · All set&lt;/legend&gt;&lt;b&gt;✓&lt;/b&gt;&lt;/fieldset&gt;
+  &lt;/div&gt;&lt;/div&gt;
+  &lt;div class="p4-steps-nav"&gt;&lt;button type="button" class="p4-btn" data-back&gt;Back&lt;/button&gt;&lt;button type="button" class="p4-btn primary" data-next&gt;Next&lt;/button&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-steps { width: min(300px, 90%); display: grid; gap: 12px; }
+.p4-steps-bar { height: 4px; border-radius: 2px; background: #2a3142; overflow: hidden; }
+.p4-steps-bar i { display: block; height: 100%; background: var(--grad); transform-origin: left; transform: scaleX(calc((var(--s, 0) + 1) / 3)); transition: transform .45s var(--ease-out); }
+.p4-steps-view { overflow: hidden; }
+.p4-steps-track { display: flex; transform: translateX(calc(var(--s, 0) * -100%)); transition: transform .45s var(--ease-out); }
+.p4-steps fieldset { flex: 0 0 100%; border: 0; padding: 4px 2px; display: grid; gap: 8px; min-height: 84px; align-content: start; }
+.p4-steps legend { font-weight: 700; font-size: .9rem; margin-bottom: 6px; }
+.p4-steps fieldset &gt; input { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font: inherit; }
+.p4-steps label { font-size: .88rem; }
+.p4-steps-done b { width: 46px; height: 46px; border-radius: 50%; background: var(--green); display: grid; place-items: center; font-size: 1.4rem; transform: scale(0); transition: transform .4s .3s var(--ease-back); }
+.p4-steps[data-s="2"] .p4-steps-done b { transform: scale(1); }
+.p4-steps-nav { display: flex; justify-content: space-between; }
+.p4-steps-nav button:disabled { opacity: .35; cursor: default; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const st = $('#p4Steps'), back = $('[data-back]', st), next = $('[data-next]', st);
+  let s = 0;
+  const go = n =&gt; {
+    s = clamp(n, 0, 2);
+    st.style.setProperty('--s', s); st.dataset.s = s;
+    back.disabled = s === 0; next.textContent = s === 1 ? 'Finish' : s === 2 ? 'Restart' : 'Next';
+  };
+  next.addEventListener('click', () =&gt; go(s === 2 ? 0 : s + 1));
+  back.addEventListener('click', () =&gt; go(s - 1));
+  go(0);
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Form</span><span class="badge js">JS</span><span class="count">375 / 408</span></div><h3>Drag-and-drop upload</h3><p class="desc">Dragging files over the zone <b>lights it up and lifts the icon</b>; each dropped file gets a row whose bar fills as it "uploads", then turns into a check. Click the zone to pick files, or press <i>Add sample</i>.</p><p class="desc use"><b>On the web:</b> file sharing, CMS media libraries, résumé uploads.</p><div class="demo-box"><div class="stage">
+<div class="p4-drop-wrap" id="p4Drop">
+  <label class="p4-drop"><input type="file" multiple hidden /><b>⇪</b><span>Drop files here or <u>browse</u></span></label>
+  <button type="button" class="p4-btn">Add sample</button>
+  <ul class="p4-files"></ul>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-drop-wrap" id="p4Drop"&gt;
+  &lt;label class="p4-drop"&gt;&lt;input type="file" multiple hidden /&gt;&lt;b&gt;⇪&lt;/b&gt;&lt;span&gt;Drop files here or &lt;u&gt;browse&lt;/u&gt;&lt;/span&gt;&lt;/label&gt;
+  &lt;button type="button" class="p4-btn"&gt;Add sample&lt;/button&gt;
+  &lt;ul class="p4-files"&gt;&lt;/ul&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-drop-wrap { width: min(340px, 92%); display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.p4-drop { grid-column: 1 / -1; display: grid; justify-items: center; gap: 4px; padding: 16px; border: 2px dashed #3a4258; border-radius: 14px; cursor: pointer; color: var(--muted); font-size: .85rem; transition: border-color .2s, background-color .2s; }
+.p4-drop b { font-size: 1.6rem; color: var(--violet); transition: transform .3s var(--ease-back); }
+.p4-drop.over { border-color: var(--violet); background: rgba(124, 92, 255, .1); }
+.p4-drop.over b { transform: translateY(-6px) scale(1.2); }
+.p4-drop-wrap &gt; .p4-btn { grid-column: 2; padding: 5px 10px; font-size: .75rem; }
+.p4-files { grid-column: 1 / -1; grid-row: 2; list-style: none; display: grid; gap: 6px; }
+.p4-files li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 7px 10px; border-radius: 9px; background: var(--panel); font-size: .78rem; animation: p4-in .3s var(--ease-out) both; }
+.p4-files li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.p4-files li em { font-style: normal; color: var(--muted); font-family: var(--mono); }
+.p4-files li i { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: #2a3142; overflow: hidden; }
+.p4-files li i::after { content: ""; display: block; height: 100%; background: var(--cyan); transform-origin: left; transform: scaleX(var(--p, 0)); }
+.p4-files li.done em { color: var(--green); }
+.p4-files li.done i { opacity: 0; transition: opacity .4s; }
+@keyframes p4-in { from { opacity: 0; transform: translateY(8px); } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const wrap = $('#p4Drop'), zone = $('.p4-drop', wrap), list = $('.p4-files', wrap), input = $('input', wrap);
+  const upload = name =&gt; {
+    const li = document.createElement('li');
+    li.innerHTML = '&lt;span&gt;&lt;/span&gt;&lt;em&gt;0%&lt;/em&gt;&lt;i&gt;&lt;/i&gt;'; li.firstChild.textContent = name;
+    list.prepend(li); while (list.children.length &gt; 3) list.lastChild.remove();
+    const t0 = performance.now(), dur = 1200 + Math.random() * 1600;
+    const step = now =&gt; {
+      const p = Math.min(1, (now - t0) / dur);
+      li.style.setProperty('--p', p); $('em', li).textContent = Math.round(p * 100) + '%';
+      if (p &lt; 1) requestAnimationFrame(step); else { li.classList.add('done'); $('em', li).textContent = '✓ done'; }
+    };
+    requestAnimationFrame(step);
+  };
+  ['dragenter', 'dragover'].forEach(t =&gt; zone.addEventListener(t, e =&gt; { e.preventDefault(); zone.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(t =&gt; zone.addEventListener(t, () =&gt; zone.classList.remove('over')));
+  zone.addEventListener('drop', e =&gt; { e.preventDefault(); [...e.dataTransfer.files].forEach(f =&gt; upload(f.name)); });
+  input.addEventListener('change', () =&gt; { [...input.files].forEach(f =&gt; upload(f.name)); input.value = ''; });
+  let n = 0;
+  $('.p4-btn', wrap).addEventListener('click', () =&gt; upload(['holiday-photo.jpg', 'invoice-0425.pdf', 'brand-guide.fig', 'demo-reel.mp4'][n++ % 4]));
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Form</span><span class="badge js">JS</span><span class="count">376 / 408</span></div><h3>Live credit-card preview</h3><p class="desc">The card <b>updates as you type</b> — each new digit pops in — and <b>flips over</b> to show the back when you focus the security-code field.</p><p class="desc use"><b>On the web:</b> checkout pages, "add a card" screens in fintech apps.</p><div class="demo-box"><div class="stage tall">
+<div class="p4-cc" id="p4Cc">
+  <div class="p4-card"><div class="p4-card-in">
+    <div class="p4-card-front"><b>VISA</b><div class="p4-card-num"></div><div class="p4-card-row"><span class="p4-card-name">YOUR NAME</span><span class="p4-card-exp">MM/YY</span></div></div>
+    <div class="p4-card-back"><i></i><span class="p4-card-cvc">•••</span></div>
+  </div></div>
+  <div class="p4-cc-fields">
+    <input class="wide" data-f="num" inputmode="numeric" maxlength="19" placeholder="Card number" aria-label="Card number" />
+    <input class="wide" data-f="name" placeholder="Name on card" aria-label="Name on card" />
+    <input data-f="exp" inputmode="numeric" maxlength="5" placeholder="MM/YY" aria-label="Expiry" />
+    <input data-f="cvc" inputmode="numeric" maxlength="3" placeholder="CVC" aria-label="Security code" />
+  </div>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-cc" id="p4Cc"&gt;
+  &lt;div class="p4-card"&gt;&lt;div class="p4-card-in"&gt;
+    &lt;div class="p4-card-front"&gt;&lt;b&gt;VISA&lt;/b&gt;&lt;div class="p4-card-num"&gt;&lt;/div&gt;&lt;div class="p4-card-row"&gt;&lt;span class="p4-card-name"&gt;YOUR NAME&lt;/span&gt;&lt;span class="p4-card-exp"&gt;MM/YY&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="p4-card-back"&gt;&lt;i&gt;&lt;/i&gt;&lt;span class="p4-card-cvc"&gt;•••&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;&lt;/div&gt;
+  &lt;div class="p4-cc-fields"&gt;
+    &lt;input class="wide" data-f="num" inputmode="numeric" maxlength="19" placeholder="Card number" aria-label="Card number" /&gt;
+    &lt;input class="wide" data-f="name" placeholder="Name on card" aria-label="Name on card" /&gt;
+    &lt;input data-f="exp" inputmode="numeric" maxlength="5" placeholder="MM/YY" aria-label="Expiry" /&gt;
+    &lt;input data-f="cvc" inputmode="numeric" maxlength="3" placeholder="CVC" aria-label="Security code" /&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-cc { display: grid; grid-template-columns: 210px 170px; gap: 16px; align-items: center; }
+.p4-card { width: 210px; height: 132px; perspective: 900px; }
+.p4-card-in { position: relative; height: 100%; transform-style: preserve-3d; transition: transform .7s var(--ease-out); }
+.p4-cc.p4-flipped .p4-card-in { transform: rotateY(180deg); }
+.p4-card-front, .p4-card-back { position: absolute; inset: 0; border-radius: 14px; backface-visibility: hidden; background: linear-gradient(135deg, #312e81, #7c5cff 60%, #ff5c8a); box-shadow: 0 14px 30px rgba(0, 0, 0, .45); }
+.p4-card-front { display: grid; align-content: space-between; padding: 14px; }
+.p4-card-front &gt; b { justify-self: end; font-style: italic; letter-spacing: .05em; }
+.p4-card-num { font: 600 .95rem var(--mono); letter-spacing: .08em; min-height: 1.3em; }
+.p4-card-num span { display: inline-block; animation: p4-digit .3s var(--ease-back); }
+.p4-card-row { display: flex; justify-content: space-between; font: 600 .62rem var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.p4-card-back { transform: rotateY(180deg); }
+.p4-card-back i { position: absolute; left: 0; right: 0; top: 18px; height: 28px; background: #0c0e14; }
+.p4-card-cvc { position: absolute; right: 14px; top: 60px; padding: 4px 10px; border-radius: 4px; background: #fff; color: #0c0e14; font: 700 .8rem var(--mono); }
+.p4-cc-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.p4-cc-fields input { min-width: 0; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font: .82rem var(--mono); outline: none; }
+.p4-cc-fields input:focus { border-color: var(--violet); }
+.p4-cc-fields .wide { grid-column: 1 / -1; }
+@keyframes p4-digit { from { transform: translateY(-8px) scale(1.4); opacity: 0; } }
+@media (max-width: 520px) {
+  .p4-cc { grid-template-columns: 1fr; gap: 10px; justify-items: center; }
+  .p4-card { width: 180px; height: 112px; }
+  .p4-card-num { font-size: .78rem; letter-spacing: .03em; }
+  .p4-cc-fields { width: 260px; grid-template-columns: repeat(4, 1fr); }
+  .p4-cc-fields .wide { grid-column: span 2; }
+}</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const cc = $('#p4Cc'), f = k =&gt; $(`[data-f="${k}"]`, cc), num = $('.p4-card-num', cc);
+  const renderNum = () =&gt; {
+    const d = f('num').value.replace(/\D/g, '').slice(0, 16);
+    f('num').value = d.replace(/(.{4})(?=.)/g, '$1 ');
+    const shown = num.textContent.replace(/[\s•]/g, '');
+    const groups = (d + '•'.repeat(16 - d.length)).match(/.{4}/g);
+    num.innerHTML = groups.map(g =&gt; [...g].map(ch =&gt; `&lt;span&gt;${ch}&lt;/span&gt;`).join('')).join(' ');
+    // only the newly typed digit animates
+    $$('span', num).forEach((s, i) =&gt; { if (i !== d.length - 1 || d.length &lt;= shown.length) s.style.animation = 'none'; });
+  };
+  f('num').addEventListener('input', renderNum);
+  f('name').addEventListener('input', () =&gt; ($('.p4-card-name', cc).textContent = f('name').value || 'YOUR NAME'));
+  f('exp').addEventListener('input', () =&gt; {
+    const d = f('exp').value.replace(/\D/g, '').slice(0, 4);
+    f('exp').value = d.length &gt; 2 ? d.slice(0, 2) + '/' + d.slice(2) : d;
+    $('.p4-card-exp', cc).textContent = f('exp').value || 'MM/YY';
+  });
+  f('cvc').addEventListener('input', () =&gt; ($('.p4-card-cvc', cc).textContent = f('cvc').value.replace(/\D/g, '') || '•••'));
+  f('cvc').addEventListener('focus', () =&gt; cc.classList.add('p4-flipped'));
+  f('cvc').addEventListener('blur', () =&gt; cc.classList.remove('p4-flipped'));
+  renderNum();
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Form</span><span class="badge js">JS</span><span class="count">377 / 408</span></div><h3>Autocomplete with highlighted matches</h3><p class="desc">Suggestions <b>drop in with a stagger</b> and the typed part is <b>highlighted</b> in each one. Arrow keys move a sliding highlight; Enter or click fills the field and the list folds away.</p><p class="desc use"><b>On the web:</b> search boxes, address and country fields, tag pickers.</p><div class="demo-box"><div class="stage">
+<div class="p4-ac" id="p4Ac"><input placeholder="Country… try “an”" aria-label="Country" role="combobox" aria-expanded="false" aria-autocomplete="list" /><ul role="listbox"></ul></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-ac" id="p4Ac"&gt;&lt;input placeholder="Country… try “an”" aria-label="Country" role="combobox" aria-expanded="false" aria-autocomplete="list" /&gt;&lt;ul role="listbox"&gt;&lt;/ul&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-ac { position: relative; width: min(280px, 90%); align-self: start; margin-top: 30px; }
+.p4-ac input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font: inherit; outline: none; }
+.p4-ac input:focus { border-color: var(--violet); }
+.p4-ac ul { position: absolute; left: 0; right: 0; top: calc(100% + 6px); list-style: none; padding: 5px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--line); box-shadow: 0 14px 34px rgba(0, 0, 0, .45);
+  transform-origin: top; transform: scaleY(.9); opacity: 0; visibility: hidden; transition: transform .2s var(--ease-out), opacity .15s, visibility .2s; }
+.p4-ac.open ul { transform: none; opacity: 1; visibility: visible; }
+.p4-ac li { padding: 7px 10px; border-radius: 8px; font-size: .88rem; cursor: pointer; animation: p4-in .25s var(--ease-out) both; animation-delay: calc(var(--i) * 30ms); }
+.p4-ac li.on { background: rgba(124, 92, 255, .2); }
+.p4-ac mark { background: none; color: var(--cyan); font-weight: 700; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const ac = $('#p4Ac'), input = $('input', ac), ul = $('ul', ac);
+  const all = ['Andorra', 'Angola', 'Argentina', 'Bangladesh', 'Canada', 'Denmark', 'France', 'Ghana', 'Iran', 'Japan', 'Jordan', 'Panama', 'Rwanda', 'Spain', 'Sudan', 'Tanzania', 'Uganda', 'Vietnam'];
+  let shown = [], sel = 0;
+  const esc = s =&gt; s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;');
+  const open = o =&gt; { ac.classList.toggle('open', o); input.setAttribute('aria-expanded', o); };
+  const render = () =&gt; {
+    const q = input.value.trim();
+    shown = q ? all.filter(c =&gt; c.toLowerCase().includes(q.toLowerCase())).slice(0, 5) : [];
+    sel = 0;
+    ul.innerHTML = shown.map((c, i) =&gt; `&lt;li role="option" style="--i:${i}" class="${i ? '' : 'on'}"&gt;${c.replace(new RegExp(esc(q), 'i'), m =&gt; `&lt;mark&gt;${m}&lt;/mark&gt;`)}&lt;/li&gt;`).join('');
+    open(shown.length &gt; 0);
+  };
+  const pick = i =&gt; { if (!shown[i]) return; input.value = shown[i]; open(false); };
+  input.addEventListener('input', render);
+  input.addEventListener('keydown', e =&gt; {
+    if (!ac.classList.contains('open')) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); sel = (sel + (e.key === 'ArrowDown' ? 1 : -1) + shown.length) % shown.length; $$('li', ul).forEach((li, i) =&gt; li.classList.toggle('on', i === sel)); }
+    if (e.key === 'Enter') { e.preventDefault(); pick(sel); }
+    if (e.key === 'Escape') open(false);
+  });
+  ul.addEventListener('pointerdown', e =&gt; { const li = e.target.closest('li'); if (li) { e.preventDefault(); pick($$('li', ul).indexOf(li)); } });
+  input.addEventListener('blur', () =&gt; open(false));
+}</code></pre></div></div></div></article>
+</div>
+</section>
+<!-- ================= 39 MICRO-3 ================= -->
+<section class="section" id="micro-3">
+<div class="sec-head reveal"><span class="sec-num">39</span><h2>Micro-interactions, part 3</h2></div>
+<p class="sec-intro reveal">Interactions that ask for <strong>deliberate effort</strong> (hold, slide) to prevent accidents, and the small status animations of chat and AI products. Always pair effortful gestures with a plain alternative for keyboard and assistive-tech users.</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Micro-interaction</span><span class="badge js">JS</span><span class="count">378 / 408</span></div><h3>Hold to confirm</h3><p class="desc">Press and hold: a ring <b>fills over 1.2 seconds</b>. Let go early and it rewinds quickly; hold to the end and the action fires. Works with mouse, touch and Space/Enter.</p><p class="desc use"><b>On the web:</b> irreversible actions — delete account, end stream, transfer money.</p><div class="demo-box"><div class="stage">
+<span class="hint">press &amp; hold</span>
+<button type="button" class="p4-hold" id="p4Hold"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" pathLength="1"/></svg><span>Hold to delete</span></button>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>.btn circle { transition: stroke-dashoffset .3s; }                 /* fast rewind */
+.btn.holding circle { stroke-dashoffset: 0; transition: stroke-dashoffset 1.2s linear; }
+btn.addEventListener('transitionend', () =&gt; { if (holding) confirm(); });</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;press &amp;amp; hold&lt;/span&gt;
+&lt;button type="button" class="p4-hold" id="p4Hold"&gt;&lt;svg viewBox="0 0 64 64"&gt;&lt;circle cx="32" cy="32" r="29" pathLength="1"/&gt;&lt;/svg&gt;&lt;span&gt;Hold to delete&lt;/span&gt;&lt;/button&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-hold { position: relative; display: flex; align-items: center; gap: 12px; padding: 10px 22px 10px 10px; border-radius: 40px; border: 1px solid rgba(255, 92, 138, .4); background: rgba(255, 92, 138, .08); color: var(--pink); font-weight: 700; user-select: none; touch-action: none; }
+.p4-hold::before { content: "🗑"; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 92, 138, .15); transition: transform .2s; }
+.p4-hold svg { position: absolute; left: 7px; top: 50%; width: 50px; height: 50px; margin-top: -25px; transform: rotate(-90deg); }
+.p4-hold circle { fill: none; stroke: var(--pink); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .3s var(--ease-out); }
+.p4-hold.holding circle { stroke-dashoffset: 0; transition: stroke-dashoffset 1.2s linear; }
+.p4-hold.holding::before { transform: scale(.88); }
+.p4-hold.done { border-color: var(--green); color: var(--green); background: rgba(52, 211, 153, .1); animation: p4-pop .4s var(--ease-back); }
+.p4-hold.done::before { content: "✓"; background: rgba(52, 211, 153, .2); }
+.p4-hold.done circle { stroke: var(--green); stroke-dashoffset: 0; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const b = $('#p4Hold'), label = $('span', b);
+  let holding = false;
+  const start = () =&gt; { if (b.classList.contains('done')) return; holding = true; b.classList.add('holding'); };
+  const stop = () =&gt; { holding = false; b.classList.remove('holding'); };
+  b.addEventListener('pointerdown', e =&gt; { b.setPointerCapture(e.pointerId); start(); });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(t =&gt; b.addEventListener(t, stop));
+  b.addEventListener('keydown', e =&gt; { if ((e.key === ' ' || e.key === 'Enter') &amp;&amp; !e.repeat) { e.preventDefault(); start(); } });
+  b.addEventListener('keyup', e =&gt; { if (e.key === ' ' || e.key === 'Enter') stop(); });
+  b.addEventListener('transitionend', e =&gt; {
+    if (e.propertyName !== 'stroke-dashoffset' || !holding) return;
+    holding = false; b.classList.remove('holding'); b.classList.add('done'); label.textContent = 'Deleted';
+    setTimeout(() =&gt; { b.classList.remove('done'); label.textContent = 'Hold to delete'; }, 2200);
+  });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Micro-interaction</span><span class="badge js">JS</span><span class="count">379 / 408</span></div><h3>Slide to confirm</h3><p class="desc">Drag the knob to the end: the track <b>fills behind it</b> and the label fades as you go. Let go early and it <b>springs back</b>; reach the end and it locks with a check.</p><p class="desc use"><b>On the web:</b> payments, ride booking, "slide to unlock" style confirmations.</p><div class="demo-box"><div class="stage">
+<div class="p4-slide" id="p4Slide"><span>Slide to pay $49 →</span><i></i><button type="button" aria-label="Slide to pay">›</button></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-slide" id="p4Slide"&gt;&lt;span&gt;Slide to pay $49 →&lt;/span&gt;&lt;i&gt;&lt;/i&gt;&lt;button type="button" aria-label="Slide to pay"&gt;›&lt;/button&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-slide { position: relative; width: min(300px, 88%); height: 56px; border-radius: 28px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; --x: 0px; touch-action: none; user-select: none; }
+.p4-slide span { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 600; font-size: .9rem; color: var(--muted); opacity: calc(1 - var(--k, 0) * 1.6); }
+.p4-slide i { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--x) + 56px); border-radius: 28px; background: var(--grad); opacity: .85; }
+.p4-slide button { position: absolute; left: 4px; top: 4px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #fff; color: var(--violet); font-size: 1.5rem; font-weight: 800; transform: translateX(var(--x)); cursor: grab; }
+.p4-slide.back i, .p4-slide.back button { transition: transform .45s var(--ease-back), width .45s var(--ease-back); }
+.p4-slide.done span { opacity: 1; color: #fff; z-index: 1; }
+.p4-slide.done button { color: var(--green); }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const sl = $('#p4Slide'), knob = $('button', sl), label = $('span', sl);
+  let x0 = null, max = 0;
+  const set = x =&gt; { sl.style.setProperty('--x', x + 'px'); sl.style.setProperty('--k', (x / max).toFixed(3)); };
+  knob.addEventListener('pointerdown', e =&gt; {
+    if (sl.classList.contains('done')) return;
+    max = sl.clientWidth - 56; x0 = e.clientX; sl.classList.remove('back'); knob.setPointerCapture(e.pointerId);
+  });
+  knob.addEventListener('pointermove', e =&gt; { if (x0 !== null) set(clamp(e.clientX - x0, 0, max)); });
+  const release = () =&gt; {
+    if (x0 === null) return;
+    x0 = null;
+    const x = parseFloat(sl.style.getPropertyValue('--x')) || 0;
+    sl.classList.add('back');
+    if (x &gt; max * .9) {
+      set(max); sl.classList.add('done'); label.textContent = 'Paid ✓'; knob.textContent = '✓';
+      setTimeout(() =&gt; { sl.classList.remove('done'); label.textContent = 'Slide to pay $49 →'; knob.textContent = '›'; set(0); }, 2200);
+    } else set(0);
+  };
+  knob.addEventListener('pointerup', release); knob.addEventListener('pointercancel', release);
+  knob.addEventListener('keydown', e =&gt; { if (e.key === 'Enter') { max = sl.clientWidth - 56; x0 = 0; set(max); release(); } }); // keyboard alternative
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Micro-interaction</span><span class="badge js">JS</span><span class="count">380 / 408</span></div><h3>Chat: send, ticks &amp; reply</h3><p class="desc">Your bubble <b>grows out of the input corner</b>; one tick appears (sent), then two (delivered), then they turn blue (read). The other person's typing dots appear and their reply pops in from the other side.</p><p class="desc use"><b>On the web:</b> messaging apps, support chat, AI assistants.</p><div class="demo-box"><div class="stage">
+<div class="p4-chat" id="p4Chat"><div class="p4-chat-log"><p class="them">Hey! Did the demo work? 👀</p></div><form><input placeholder="Type a message…" aria-label="Message" value="Yes, it looks great!" /><button type="submit" aria-label="Send">➤</button></form></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-chat" id="p4Chat"&gt;&lt;div class="p4-chat-log"&gt;&lt;p class="them"&gt;Hey! Did the demo work? 👀&lt;/p&gt;&lt;/div&gt;&lt;form&gt;&lt;input placeholder="Type a message…" aria-label="Message" value="Yes, it looks great!" /&gt;&lt;button type="submit" aria-label="Send"&gt;➤&lt;/button&gt;&lt;/form&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-chat { width: min(320px, 92%); height: 230px; display: grid; grid-template-rows: 1fr auto; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.p4-chat-log { display: flex; flex-direction: column; gap: 6px; padding: 12px; overflow-y: auto; scrollbar-width: none; }
+.p4-chat-log p { max-width: 78%; padding: 8px 12px; border-radius: 16px; font-size: .85rem; line-height: 1.35; animation: p4-bubble .35s var(--ease-back) both; }
+.p4-chat-log .me { align-self: flex-end; background: var(--violet); border-bottom-right-radius: 4px; transform-origin: 100% 100%; }
+.p4-chat-log .them { align-self: flex-start; background: var(--panel-2); border-bottom-left-radius: 4px; transform-origin: 0 100%; }
+.p4-chat-log small { display: block; text-align: right; font-size: .65rem; color: rgba(255, 255, 255, .6); margin-top: 2px; transition: color .3s; }
+.p4-chat-log small.read { color: #7dd3fc; }
+.p4-chat-log .typing { display: flex; gap: 4px; padding: 11px 12px; }
+.p4-chat-log .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: p4-dot 1s infinite; }
+.p4-chat-log .typing i:nth-child(2) { animation-delay: .15s; } .p4-chat-log .typing i:nth-child(3) { animation-delay: .3s; }
+.p4-chat form { display: flex; gap: 6px; padding: 8px; border-top: 1px solid var(--line); }
+.p4-chat input { flex: 1; min-width: 0; padding: 8px 12px; border-radius: 18px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font: inherit; font-size: .85rem; outline: none; }
+.p4-chat button { width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--violet); transition: transform .2s var(--ease-back); }
+.p4-chat button:active { transform: scale(.85) rotate(-20deg); }
+@keyframes p4-bubble { from { transform: scale(.4); opacity: 0; } }
+@keyframes p4-dot { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const chat = $('#p4Chat'), log = $('.p4-chat-log', chat), input = $('input', chat);
+  const replies = ['Nice! 🎉', 'Ship it 🚀', 'Love the bounce on that bubble', 'Haha 😂'];
+  let r = 0;
+  const add = (html, cls) =&gt; { const p = document.createElement('p'); p.className = cls; p.innerHTML = html; log.appendChild(p); log.scrollTo({ top: log.scrollHeight, behavior: 'smooth' }); return p; };
+  $('form', chat).addEventListener('submit', e =&gt; {
+    e.preventDefault();
+    const text = input.value.trim(); if (!text) return;
+    input.value = '';
+    const p = add('', 'me'); p.textContent = text;
+    const tick = document.createElement('small'); tick.textContent = '✓'; p.appendChild(tick);
+    setTimeout(() =&gt; (tick.textContent = '✓✓'), 600);
+    setTimeout(() =&gt; tick.classList.add('read'), 1200);
+    setTimeout(() =&gt; {
+      const typing = add('&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;', 'them typing');
+      setTimeout(() =&gt; { typing.remove(); add('', 'them').textContent = replies[r++ % replies.length]; }, 1300);
+    }, 1500);
+  });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Micro-interaction</span><span class="badge js">JS</span><span class="count">381 / 408</span></div><h3>Morphing status pill</h3><p class="desc">A small black pill <b>stretches into a card</b> to show a call, timer or song, then <b>shrinks back</b>. Size and corner radius change together on a spring curve, so it feels like one rubbery object (the style made famous by phone "islands").</p><p class="desc use"><b>On the web:</b> live-activity status, recording indicators, now-playing widgets.</p><div class="demo-box"><div class="stage">
+<div class="p4-island" id="p4Island"><div class="p4-pill"><div data-v="call"><b>📞</b><span>Mom<small>incoming call</small></span><button type="button" aria-label="Decline">✕</button><button type="button" aria-label="Accept">✓</button></div><div data-v="timer"><b>⏱</b><span>Timer<small>04:59 left</small></span></div><div data-v="music"><b>🎵</b><span>Night Drive<small>Synthwave Radio</small></span><i></i><i></i><i></i></div></div>
+<nav><button type="button" class="p4-btn" data-k="call">Call</button><button type="button" class="p4-btn" data-k="timer">Timer</button><button type="button" class="p4-btn" data-k="music">Music</button></nav></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>.pill { width: 110px; height: 32px; border-radius: 16px;
+        transition: width .5s var(--spring), height .5s var(--spring), border-radius .5s var(--spring); }
+.pill.call { width: 300px; height: 70px; border-radius: 28px; }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-island" id="p4Island"&gt;&lt;div class="p4-pill"&gt;&lt;div data-v="call"&gt;&lt;b&gt;📞&lt;/b&gt;&lt;span&gt;Mom&lt;small&gt;incoming call&lt;/small&gt;&lt;/span&gt;&lt;button type="button" aria-label="Decline"&gt;✕&lt;/button&gt;&lt;button type="button" aria-label="Accept"&gt;✓&lt;/button&gt;&lt;/div&gt;&lt;div data-v="timer"&gt;&lt;b&gt;⏱&lt;/b&gt;&lt;span&gt;Timer&lt;small&gt;04:59 left&lt;/small&gt;&lt;/span&gt;&lt;/div&gt;&lt;div data-v="music"&gt;&lt;b&gt;🎵&lt;/b&gt;&lt;span&gt;Night Drive&lt;small&gt;Synthwave Radio&lt;/small&gt;&lt;/span&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;nav&gt;&lt;button type="button" class="p4-btn" data-k="call"&gt;Call&lt;/button&gt;&lt;button type="button" class="p4-btn" data-k="timer"&gt;Timer&lt;/button&gt;&lt;button type="button" class="p4-btn" data-k="music"&gt;Music&lt;/button&gt;&lt;/nav&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-island { --spring: linear(0, 0.243, 0.501, 0.733, 0.919, 1.049, 1.127, 1.16, 1.161, 1.139, 1.107, 1.072, 1.04, 1.014, 0.995, 0.984, 0.979, 0.978, 0.981, 0.985, 0.99, 0.994, 0.998, 1, 1.002, 1.003, 1.003, 1.003, 1.002, 1.002, 1.001, 1, 1);
+  position: absolute; inset: 0; display: grid; justify-items: center; align-content: space-between; padding: 18px 0 22px; }
+.p4-pill { position: relative; width: 110px; height: 32px; border-radius: 16px; background: #000; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); overflow: hidden;
+  transition: width .55s var(--spring), height .55s var(--spring), border-radius .55s var(--spring); }
+.p4-pill.call { width: 300px; height: 70px; border-radius: 30px; }
+.p4-pill.timer { width: 190px; height: 44px; border-radius: 22px; }
+.p4-pill.music { width: 260px; height: 70px; border-radius: 30px; }
+.p4-pill &gt; div { position: absolute; inset: 0; display: flex; align-items: center; gap: 10px; padding: 0 14px; opacity: 0; filter: blur(6px); transition: opacity .2s, filter .2s; white-space: nowrap; }
+.p4-pill.call [data-v="call"], .p4-pill.timer [data-v="timer"], .p4-pill.music [data-v="music"] { opacity: 1; filter: none; transition-delay: .18s; }
+.p4-pill b { font-size: 1.2rem; }
+.p4-pill span { flex: 1; font-size: .85rem; font-weight: 700; }
+.p4-pill small { display: block; font-weight: 400; font-size: .7rem; color: #9aa3b8; }
+.p4-pill button { width: 36px; height: 36px; border-radius: 50%; border: 0; background: #e11d48; }
+.p4-pill button + button { background: #16a34a; }
+.p4-pill i { width: 3px; height: 18px; border-radius: 2px; background: #34d399; animation: p4-eq .8s ease-in-out infinite alternate; }
+.p4-pill i:nth-of-type(2) { animation-duration: .55s; } .p4-pill i:nth-of-type(3) { animation-duration: .7s; }
+.p4-island nav { display: flex; gap: 8px; }
+@keyframes p4-eq { from { transform: scaleY(.3); } }
+@media (max-width: 420px) { .p4-pill.call { width: 270px; } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const isl = $('#p4Island'), pill = $('.p4-pill', isl);
+  let t = 0;
+  $$('nav button', isl).forEach(b =&gt; b.addEventListener('click', () =&gt; {
+    pill.className = 'p4-pill ' + b.dataset.k;
+    clearTimeout(t); t = setTimeout(() =&gt; (pill.className = 'p4-pill'), 2800);
+  }));
+  $$('.p4-pill button', isl).forEach(b =&gt; b.addEventListener('click', () =&gt; { clearTimeout(t); pill.className = 'p4-pill'; }));
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Micro-interaction</span><span class="badge js">JS</span><span class="count">382 / 408</span></div><h3>AI "thinking" + streamed answer</h3><p class="desc">A <b>shimmer sweeps across "Thinking…"</b> while the answer is pending, then words <b>stream in one by one</b>, each fading up from a blur, with a caret at the end. Streaming makes a slow answer feel fast.</p><p class="desc use"><b>On the web:</b> chat assistants, AI search, "generate" buttons.</p><div class="demo-box"><div class="stage">
+<div class="p4-ai" id="p4Ai"><button type="button" class="p4-btn primary">✨ Ask: “What is easing?”</button><div class="p4-ai-out"></div></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>.thinking { background: linear-gradient(90deg, #6b7490 40%, #fff 50%, #6b7490 60%) 0 0 / 300% 100%;
+            -webkit-background-clip: text; color: transparent; animation: shimmer 1.4s linear infinite; }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-ai" id="p4Ai"&gt;&lt;button type="button" class="p4-btn primary"&gt;✨ Ask: “What is easing?”&lt;/button&gt;&lt;div class="p4-ai-out"&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-ai { width: min(380px, 92%); display: grid; gap: 12px; justify-items: start; }
+.p4-ai-out { min-height: 120px; width: 100%; padding: 12px 14px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); font-size: .9rem; line-height: 1.5; }
+.p4-ai-out:empty { visibility: hidden; }
+.p4-ai-think { font-weight: 600; background: linear-gradient(90deg, #6b7490 40%, #fff 50%, #6b7490 60%) 0 0 / 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: p4-shimmer 1.4s linear infinite; }
+.p4-ai-out .w { display: inline; animation: p4-token .35s var(--ease-out) both; }
+.p4-ai-out.streaming::after { content: ""; display: inline-block; width: 8px; height: 1em; margin-left: 2px; vertical-align: -.15em; background: var(--violet); animation: p4-blink 1s steps(1) infinite; }
+@keyframes p4-shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@keyframes p4-token { from { opacity: 0; filter: blur(4px); } }
+@keyframes p4-blink { 50% { opacity: 0; } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const ai = $('#p4Ai'), out = $('.p4-ai-out', ai), btn = $('button', ai);
+  const answer = 'Easing is the speed curve of an animation. Ease-out starts fast and slows down, so things feel like they arrive with weight; ease-in does the opposite and suits exits.';
+  let busy = false;
+  btn.addEventListener('click', () =&gt; {
+    if (busy) return; busy = true;
+    out.className = 'p4-ai-out'; out.innerHTML = '&lt;span class="p4-ai-think"&gt;Thinking…&lt;/span&gt;';
+    setTimeout(() =&gt; {
+      out.innerHTML = ''; out.classList.add('streaming');
+      const words = answer.split(' ');
+      let i = 0;
+      const next = () =&gt; {
+        if (i &gt;= words.length) { out.classList.remove('streaming'); busy = false; return; }
+        const s = document.createElement('span'); s.className = 'w'; s.textContent = words[i++] + ' ';
+        out.appendChild(s); setTimeout(next, 45 + Math.random() * 70);
+      };
+      next();
+    }, 1500);
+  });
+}</code></pre></div></div></div></article>
+</div>
+</section>
+<!-- ================= 40 GESTURES ================= -->
+<section class="section" id="gestures">
+<div class="sec-head reveal"><span class="sec-num">40</span><h2>Drag &amp; gestures, part 2</h2></div>
+<p class="sec-intro reveal">Direct manipulation feels right when the object <strong>stays glued to the finger</strong> while dragging and <strong>keeps its momentum</strong> when released. All of these use Pointer Events, so one code path covers mouse, pen and touch (<code>touch-action</code> stops the page from scrolling under your finger).</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Physics</span><span class="badge js">JS</span><span class="count">383 / 408</span></div><h3>Drag to reorder</h3><p class="desc">Grab a row by its handle: it <b>lifts</b> (scale + shadow) and follows the pointer, and the other rows <b>slide out of the way</b> as it passes their middle (FLIP). Drop it and it settles into its slot.</p><p class="desc use"><b>On the web:</b> playlists, to-do priorities, form-builder fields, settings order.</p><div class="demo-box"><div class="stage">
+<span class="hint">drag ⠿ handles</span>
+<ul class="p4-sort" id="p4Sort"><li><b>⠿</b>🎸 Rock classics</li><li><b>⠿</b>🎹 Lo-fi beats</li><li><b>⠿</b>🎺 Jazz evenings</li><li><b>⠿</b>🥁 Workout mix</li></ul>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>if (y &gt; next.center) { list.insertBefore(next, item); flip(next); }    // swap with the row below
+item.style.transform = `translateY(${pointerY - grabY - item.offsetTop}px)`;  // stay under the pointer</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;drag ⠿ handles&lt;/span&gt;
+&lt;ul class="p4-sort" id="p4Sort"&gt;&lt;li&gt;&lt;b&gt;⠿&lt;/b&gt;🎸 Rock classics&lt;/li&gt;&lt;li&gt;&lt;b&gt;⠿&lt;/b&gt;🎹 Lo-fi beats&lt;/li&gt;&lt;li&gt;&lt;b&gt;⠿&lt;/b&gt;🎺 Jazz evenings&lt;/li&gt;&lt;li&gt;&lt;b&gt;⠿&lt;/b&gt;🥁 Workout mix&lt;/li&gt;&lt;/ul&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-sort { position: relative; list-style: none; width: min(260px, 88%); display: grid; gap: 6px; } /* offsetTop is measured from here */
+.p4-sort li { position: relative; display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: .9rem; user-select: none;
+  transition: box-shadow .2s, scale .2s; }
+.p4-sort b { cursor: grab; color: var(--muted); touch-action: none; padding: 0 4px; }
+.p4-sort li.lift { z-index: 2; scale: 1.04; box-shadow: 0 14px 30px rgba(0, 0, 0, .5); border-color: var(--violet); }
+.p4-sort li.settle { transition: transform .25s var(--ease-out), box-shadow .2s, scale .2s; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const list = $('#p4Sort');
+  let drag = null;
+  const flip = (el, before) =&gt; { const after = el.getBoundingClientRect().top; el.animate([{ transform: `translateY(${before - after}px)` }, { transform: 'none' }], { duration: 220, easing: 'ease-out' }); };
+  list.addEventListener('pointerdown', e =&gt; {
+    const h = e.target.closest('b'); if (!h) return;
+    const item = h.parentElement;
+    drag = { item, grab: e.clientY - item.getBoundingClientRect().top, listTop: list.getBoundingClientRect().top };
+    item.classList.remove('settle'); item.classList.add('lift'); h.setPointerCapture(e.pointerId);
+  });
+  list.addEventListener('pointermove', e =&gt; {
+    if (!drag) return;
+    const { item } = drag, top = e.clientY - drag.listTop - drag.grab; // wanted top inside the list
+    const prev = item.previousElementSibling, next = item.nextElementSibling;
+    if (next &amp;&amp; top + item.offsetHeight / 2 &gt; next.offsetTop + next.offsetHeight / 2) { const b = next.getBoundingClientRect().top; list.insertBefore(next, item); flip(next, b); }
+    else if (prev &amp;&amp; top + item.offsetHeight / 2 &lt; prev.offsetTop + prev.offsetHeight / 2) { const b = prev.getBoundingClientRect().top; list.insertBefore(item, prev); flip(prev, b); }
+    item.style.transform = `translateY(${top - item.offsetTop}px)`;
+  });
+  const drop = () =&gt; {
+    if (!drag) return;
+    const { item } = drag; drag = null;
+    item.classList.add('settle'); item.classList.remove('lift'); item.style.transform = '';
+  };
+  list.addEventListener('pointerup', drop); list.addEventListener('pointercancel', drop);
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Physics</span><span class="badge js">JS</span><span class="count">384 / 408</span></div><h3>Kanban board drag &amp; drop</h3><p class="desc">Uses the native <b>HTML Drag and Drop API</b>: the card you pick up goes translucent, the column under it <b>lights up</b>, and the card previews its new position live as you move. <b>Mouse/trackpad; most touch browsers don't fire native drag events.</b></p><p class="desc use"><b>On the web:</b> project boards, CRM pipelines, hiring trackers.</p><div class="demo-box"><div class="stage">
+<div class="p4-kb" id="p4Kb">
+  <div class="p4-kb-col"><h5>To do</h5><p draggable="true">Write copy</p><p draggable="true">Pick fonts</p></div>
+  <div class="p4-kb-col"><h5>Doing</h5><p draggable="true">Hero animation</p></div>
+  <div class="p4-kb-col"><h5>Done</h5><p draggable="true">Wireframes</p></div>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>card.draggable = true;
+column.addEventListener('dragover', e =&gt; { e.preventDefault(); column.insertBefore(dragging, cardBelow(e.clientY)); });</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-kb" id="p4Kb"&gt;
+  &lt;div class="p4-kb-col"&gt;&lt;h5&gt;To do&lt;/h5&gt;&lt;p draggable="true"&gt;Write copy&lt;/p&gt;&lt;p draggable="true"&gt;Pick fonts&lt;/p&gt;&lt;/div&gt;
+  &lt;div class="p4-kb-col"&gt;&lt;h5&gt;Doing&lt;/h5&gt;&lt;p draggable="true"&gt;Hero animation&lt;/p&gt;&lt;/div&gt;
+  &lt;div class="p4-kb-col"&gt;&lt;h5&gt;Done&lt;/h5&gt;&lt;p draggable="true"&gt;Wireframes&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-kb { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: min(420px, 96%); }
+.p4-kb-col { min-height: 170px; padding: 8px; border-radius: 12px; background: var(--panel); border: 1px dashed transparent; display: flex; flex-direction: column; gap: 6px; transition: background-color .2s, border-color .2s; }
+.p4-kb-col.over { background: rgba(124, 92, 255, .1); border-color: var(--violet); }
+.p4-kb h5 { font: 700 .68rem var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 2px; }
+.p4-kb p { padding: 8px 10px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line); font-size: .8rem; cursor: grab; transition: opacity .2s, transform .2s; }
+.p4-kb p:hover { transform: translateY(-2px); }
+.p4-kb p.dragging { opacity: .35; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const kb = $('#p4Kb');
+  let dragging = null;
+  kb.addEventListener('dragstart', e =&gt; { dragging = e.target.closest('p'); if (!dragging) return; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); requestAnimationFrame(() =&gt; dragging.classList.add('dragging')); });
+  kb.addEventListener('dragend', () =&gt; { dragging?.classList.remove('dragging'); dragging = null; $$('.p4-kb-col', kb).forEach(c =&gt; c.classList.remove('over')); });
+  $$('.p4-kb-col', kb).forEach(col =&gt; {
+    col.addEventListener('dragover', e =&gt; {
+      if (!dragging) return;
+      e.preventDefault(); col.classList.add('over');
+      const below = $$('p:not(.dragging)', col).find(p =&gt; e.clientY &lt; p.getBoundingClientRect().top + p.offsetHeight / 2);
+      if (below) col.insertBefore(dragging, below); else col.appendChild(dragging);
+    });
+    col.addEventListener('dragleave', e =&gt; { if (!col.contains(e.relatedTarget)) col.classList.remove('over'); });
+    col.addEventListener('drop', e =&gt; { e.preventDefault(); col.classList.remove('over'); });
+  });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Physics</span><span class="badge js">JS</span><span class="count">385 / 408</span></div><h3>Fling carousel with momentum</h3><p class="desc">Drag the strip and <b>throw it</b>: it keeps gliding with the speed you released it at, slowing with friction, and <b>rubber-bands</b> back if you pull past either end. It finally eases onto the nearest card.</p><p class="desc use"><b>On the web:</b> mobile product rails, story strips, image galleries.</p><div class="demo-box"><div class="stage">
+<span class="hint">drag &amp; throw</span>
+<div class="p4-fling" id="p4Fling"><div class="p4-fling-track"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i></div></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>x += v; v *= 0.95;                        // momentum + friction
+if (x &gt; 0) x += (0 - x) * .2;             // rubber-band past the edge</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;drag &amp;amp; throw&lt;/span&gt;
+&lt;div class="p4-fling" id="p4Fling"&gt;&lt;div class="p4-fling-track"&gt;&lt;i&gt;1&lt;/i&gt;&lt;i&gt;2&lt;/i&gt;&lt;i&gt;3&lt;/i&gt;&lt;i&gt;4&lt;/i&gt;&lt;i&gt;5&lt;/i&gt;&lt;i&gt;6&lt;/i&gt;&lt;i&gt;7&lt;/i&gt;&lt;i&gt;8&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-fling { width: 100%; overflow: hidden; padding: 0 20px; touch-action: pan-y; cursor: grab; user-select: none; }
+.p4-fling:active { cursor: grabbing; }
+.p4-fling-track { display: flex; gap: 12px; width: max-content; will-change: transform; }
+.p4-fling i { width: 120px; height: 150px; border-radius: 16px; display: grid; place-items: center; font: 900 2rem system-ui; font-style: normal; background: var(--grad); }
+.p4-fling i:nth-child(3n+2) { background: linear-gradient(135deg, var(--cyan), var(--violet)); }
+.p4-fling i:nth-child(3n) { background: linear-gradient(135deg, var(--amber), var(--pink)); }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const box = $('#p4Fling'), track = $('.p4-fling-track', box), STEP = 132;
+  let x = 0, v = 0, down = false, lastX = 0, lastT = 0, raf = 0;
+  const min = () =&gt; Math.min(0, box.clientWidth - 40 - track.scrollWidth);
+  const draw = () =&gt; (track.style.transform = `translateX(${x}px)`);
+  const loop = () =&gt; {
+    if (!down) {
+      x += v; v *= .95;
+      const lo = min();
+      if (x &gt; 0) { x += -x * .2; v *= .5; } else if (x &lt; lo) { x += (lo - x) * .2; v *= .5; }
+      else if (Math.abs(v) &lt; .6) { const target = clamp(Math.round(x / STEP) * STEP, lo, 0); x += (target - x) * .15; }
+    }
+    draw();
+    raf = down || Math.abs(v) &gt; .05 || Math.abs(x - clamp(Math.round(x / STEP) * STEP, min(), 0)) &gt; .3 ? requestAnimationFrame(loop) : 0;
+  };
+  box.addEventListener('pointerdown', e =&gt; { down = true; v = 0; lastX = e.clientX; lastT = performance.now(); box.setPointerCapture(e.pointerId); if (!raf) raf = requestAnimationFrame(loop); });
+  box.addEventListener('pointermove', e =&gt; {
+    if (!down) return;
+    const dx = e.clientX - lastX, now = performance.now();
+    const lo = min(), outside = x &gt; 0 || x &lt; lo;
+    x += outside ? dx * .35 : dx;                       // resistance past the edges
+    v = dx / Math.max(1, now - lastT) * 16;             // px per frame
+    lastX = e.clientX; lastT = now;
+  });
+  const up = () =&gt; { down = false; if (!raf) raf = requestAnimationFrame(loop); };
+  box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Physics</span><span class="badge js">JS</span><span class="count">386 / 408</span></div><h3>Pinch / Ctrl+scroll zoom &amp; pan</h3><p class="desc">Zoom <b>towards the point under your fingers or cursor</b> (pinch on touch, Ctrl + scroll or double-click on desktop), then drag to pan. The image can't be dragged out of its frame.</p><p class="desc use"><b>On the web:</b> maps, product zoom, floor plans, photo viewers.</p><div class="demo-box"><div class="stage">
+<span class="hint">Ctrl+scroll · pinch · double-click · drag</span>
+<div class="p4-zoom" id="p4Zoom"><div class="p4-zoom-img scene"></div><output>100%</output></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>// keep the point under the cursor fixed while scaling:
+x = px - (px - x) * (newScale / scale);
+y = py - (py - y) * (newScale / scale);</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;Ctrl+scroll · pinch · double-click · drag&lt;/span&gt;
+&lt;div class="p4-zoom" id="p4Zoom"&gt;&lt;div class="p4-zoom-img scene"&gt;&lt;/div&gt;&lt;output&gt;100%&lt;/output&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.scene { position: relative; overflow: hidden; background: linear-gradient(180deg, #fbbf24 0%, #f97316 38%, #7c3aed 100%); }
+.scene::before {
+  content: ""; position: absolute; width: 30%; aspect-ratio: 1; border-radius: 50%;
+  background: #fde68a; left: 50%; top: 18%; transform: translateX(-50%); box-shadow: 0 0 30px #fde68a;
+}
+.scene::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 56%; background: #312e81;
+  clip-path: polygon(0 60%, 18% 25%, 35% 55%, 55% 8%, 75% 50%, 88% 30%, 100% 55%, 100% 100%, 0 100%);
+}
+
+.p4-zoom { position: relative; width: 300px; height: 190px; border-radius: 12px; overflow: hidden; touch-action: none; cursor: zoom-in; border: 1px solid var(--line); }
+.p4-zoom.zoomed { cursor: grab; }
+.p4-zoom-img { position: absolute; inset: 0; transform-origin: 0 0; transition: transform .12s ease-out; }
+.p4-zoom.dragging .p4-zoom-img { transition: none; }
+.p4-zoom output { position: absolute; right: 8px; bottom: 8px; z-index: 3; padding: 3px 7px; border-radius: 6px; background: rgba(0, 0, 0, .55); font: 600 .7rem var(--mono); }
+@media (max-width: 420px) { .p4-zoom { width: 260px; } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const z = $('#p4Zoom'), img = $('.p4-zoom-img', z), out = $('output', z);
+  let s = 1, x = 0, y = 0;
+  const pts = new Map(); let pinch0 = null, pan0 = null;
+  const fit = () =&gt; { const W = z.clientWidth, H = z.clientHeight; x = clamp(x, W - W * s, 0); y = clamp(y, H - H * s, 0); };
+  const apply = () =&gt; { fit(); img.style.transform = `translate(${x}px, ${y}px) scale(${s})`; out.textContent = Math.round(s * 100) + '%'; z.classList.toggle('zoomed', s &gt; 1); };
+  const zoomAt = (px, py, ns) =&gt; { ns = clamp(ns, 1, 4); x = px - (px - x) * (ns / s); y = py - (py - y) * (ns / s); s = ns; apply(); };
+  const local = e =&gt; { const r = z.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  z.addEventListener('wheel', e =&gt; { if (!e.ctrlKey) return; e.preventDefault(); const [px, py] = local(e); zoomAt(px, py, s * Math.exp(-e.deltaY * .01)); }, { passive: false });
+  z.addEventListener('dblclick', e =&gt; { const [px, py] = local(e); zoomAt(px, py, s &gt; 1.5 ? 1 : 2.5); });
+  z.addEventListener('pointerdown', e =&gt; { z.setPointerCapture(e.pointerId); pts.set(e.pointerId, local(e)); z.classList.add('dragging'); pan0 = [...local(e), x, y]; pinch0 = null; });
+  z.addEventListener('pointermove', e =&gt; {
+    if (!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, local(e));
+    if (pts.size === 2) {
+      const [[ax, ay], [bx, by]] = [...pts.values()], d = Math.hypot(ax - bx, ay - by), cx = (ax + bx) / 2, cy = (ay + by) / 2;
+      if (!pinch0) pinch0 = { d, s }; else zoomAt(cx, cy, pinch0.s * d / pinch0.d);
+    } else if (s &gt; 1) { const [px, py] = local(e); x = pan0[2] + px - pan0[0]; y = pan0[3] + py - pan0[1]; apply(); }
+  });
+  const lift = e =&gt; { pts.delete(e.pointerId); if (!pts.size) z.classList.remove('dragging'); pinch0 = null; if (pts.size === 1) { const [p] = pts.values(); pan0 = [...p, x, y]; } };
+  z.addEventListener('pointerup', lift); z.addEventListener('pointercancel', lift);
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Physics</span><span class="badge js">JS</span><span class="count">387 / 408</span></div><h3>Drag to rotate 360°</h3><p class="desc">A 3D object you can <b>spin by dragging</b>, with inertia when you let go; after a moment of rest it drifts slowly on its own. Product sites do this with a photo sequence or a 3D model; here it's a CSS 3D box.</p><p class="desc use"><b>On the web:</b> product viewers, configurators, 3D badges.</p><div class="demo-box"><div class="stage">
+<span class="hint">drag to spin</span>
+<div class="p4-spin" id="p4Spin"><div class="p4-spin-box"><i>FRONT</i><i>RIGHT</i><i>BACK</i><i>LEFT</i><i>TOP</i><i>BOTTOM</i></div></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;drag to spin&lt;/span&gt;
+&lt;div class="p4-spin" id="p4Spin"&gt;&lt;div class="p4-spin-box"&gt;&lt;i&gt;FRONT&lt;/i&gt;&lt;i&gt;RIGHT&lt;/i&gt;&lt;i&gt;BACK&lt;/i&gt;&lt;i&gt;LEFT&lt;/i&gt;&lt;i&gt;TOP&lt;/i&gt;&lt;i&gt;BOTTOM&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.box { width: 56px; height: 56px; border-radius: 12px; background: var(--grad); box-shadow: 0 8px 24px rgba(124, 92, 255, .35); }
+.box.sm { width: 46px; height: 46px; }
+
+.p4-spin { width: 100%; height: 100%; display: grid; place-items: center; perspective: 700px; touch-action: none; cursor: grab; user-select: none; }
+.p4-spin-box { position: relative; width: 110px; height: 110px; transform-style: preserve-3d; transform: rotateX(var(--rx, -18deg)) rotateY(var(--ry, 30deg)); }
+.p4-spin-box i { position: absolute; inset: 0; display: grid; place-items: center; font: 800 .75rem var(--mono); font-style: normal; letter-spacing: .1em; border-radius: 10px; border: 1px solid rgba(255, 255, 255, .35); background: rgba(124, 92, 255, .55); backface-visibility: hidden; }
+.p4-spin-box i:nth-child(1) { transform: translateZ(55px); }
+.p4-spin-box i:nth-child(2) { transform: rotateY(90deg) translateZ(55px); background: rgba(255, 92, 138, .55); }
+.p4-spin-box i:nth-child(3) { transform: rotateY(180deg) translateZ(55px); }
+.p4-spin-box i:nth-child(4) { transform: rotateY(-90deg) translateZ(55px); background: rgba(255, 92, 138, .55); }
+.p4-spin-box i:nth-child(5) { transform: rotateX(90deg) translateZ(55px); background: rgba(34, 211, 238, .55); }
+.p4-spin-box i:nth-child(6) { transform: rotateX(-90deg) translateZ(55px); background: rgba(34, 211, 238, .55); }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const zone = $('#p4Spin'), box = $('.p4-spin-box', zone);
+  let ry = 30, rx = -18, vy = 0, vx = 0, down = false, lx = 0, ly = 0, idle = 0;
+  addLoop(zone, t =&gt; {
+    if (!down) {
+      ry += vy; rx = clamp(rx + vx, -60, 60); vy *= .95; vx *= .9;
+      if (Math.abs(vy) &lt; .05 &amp;&amp; t - idle &gt; 1500) ry += .25;   // gentle auto-rotate when resting
+    }
+    box.style.setProperty('--ry', ry + 'deg'); box.style.setProperty('--rx', rx + 'deg');
+  });
+  zone.addEventListener('pointerdown', e =&gt; { down = true; lx = e.clientX; ly = e.clientY; vx = vy = 0; zone.setPointerCapture(e.pointerId); });
+  zone.addEventListener('pointermove', e =&gt; {
+    if (!down) return;
+    vy = (e.clientX - lx) * .5; vx = -(e.clientY - ly) * .3; ry += vy; rx = clamp(rx + vx, -60, 60);
+    lx = e.clientX; ly = e.clientY;
+  });
+  const up = () =&gt; { down = false; idle = performance.now(); };
+  zone.addEventListener('pointerup', up); zone.addEventListener('pointercancel', up);
+}</code></pre></div></div></div></article>
+</div>
+</section>
+<!-- ================= 41 CURSOR ================= -->
+<section class="section" id="cursor">
+<div class="sec-head reveal"><span class="sec-num">41</span><h2>Cursor effects, part 2</h2></div>
+<p class="sec-intro reveal">Custom cursors are a signature of creative portfolios. Keep the real cursor's job intact — the custom one should <strong>add information</strong> ("View", "Drag", "Play"), not hide where the user is pointing — and turn them off on touch devices, where there is no cursor.</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Pointer</span><span class="badge js">JS</span><span class="count">388 / 408</span></div><h3>Cursor that grows a label</h3><p class="desc">A small dot trails the pointer and, over something clickable, <b>swells into a bubble with a word in it</b> — "View" over images, "Open ↗" over links — taken from a <code>data-cursor</code> attribute.</p><p class="desc use"><b>On the web:</b> agency and portfolio case-study grids.</p><div class="demo-box"><div class="stage">
+<span class="hint">move mouse over the tiles</span>
+<div class="p4-cl" id="p4Cl"><div class="p4-cl-grid"><i data-cursor="View" class="scene"></i><i data-cursor="View" class="scene" style="filter:hue-rotate(150deg)"></i><a href="#cursor" data-cursor="Open ↗">Case study</a></div><b class="p4-cl-dot"></b></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>const label = e.target.closest('[data-cursor]')?.dataset.cursor;
+cursor.classList.toggle('big', !!label);  cursor.textContent = label || '';</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;move mouse over the tiles&lt;/span&gt;
+&lt;div class="p4-cl" id="p4Cl"&gt;&lt;div class="p4-cl-grid"&gt;&lt;i data-cursor="View" class="scene"&gt;&lt;/i&gt;&lt;i data-cursor="View" class="scene" style="filter:hue-rotate(150deg)"&gt;&lt;/i&gt;&lt;a href="#cursor" data-cursor="Open ↗"&gt;Case study&lt;/a&gt;&lt;/div&gt;&lt;b class="p4-cl-dot"&gt;&lt;/b&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.dot { width: 26px; height: 26px; border-radius: 50%; background: var(--cyan); }
+
+.scene { position: relative; overflow: hidden; background: linear-gradient(180deg, #fbbf24 0%, #f97316 38%, #7c3aed 100%); }
+.scene::before {
+  content: ""; position: absolute; width: 30%; aspect-ratio: 1; border-radius: 50%;
+  background: #fde68a; left: 50%; top: 18%; transform: translateX(-50%); box-shadow: 0 0 30px #fde68a;
+}
+.scene::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 56%; background: #312e81;
+  clip-path: polygon(0 60%, 18% 25%, 35% 55%, 55% 8%, 75% 50%, 88% 30%, 100% 55%, 100% 100%, 0 100%);
+}
+
+.p4-cl { position: absolute; inset: 0; display: grid; place-items: center; cursor: none; }
+.p4-cl-grid { display: flex; gap: 12px; align-items: center; }
+.p4-cl-grid i { width: 110px; height: 80px; border-radius: 10px; }
+.p4-cl-grid a { color: var(--text); font-weight: 700; padding: 10px; cursor: none; }
+.p4-cl-dot { position: absolute; left: 0; top: 0; z-index: 5; display: grid; place-items: center; width: 14px; height: 14px; margin: -7px; border-radius: 50%; background: #fff; color: #0c0e14;
+  font: 700 0/1 system-ui, sans-serif; pointer-events: none; opacity: 0; transition: width .3s var(--ease-out), height .3s var(--ease-out), margin .3s var(--ease-out), font-size .2s, opacity .2s; }
+.p4-cl:hover .p4-cl-dot { opacity: 1; }
+.p4-cl-dot.big { width: 70px; height: 70px; margin: -35px; font-size: .78rem; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const zone = $('#p4Cl'), dot = $('.p4-cl-dot', zone);
+  let x = 0, y = 0, tx = 0, ty = 0, raf = 0;
+  const loop = () =&gt; { x += (tx - x) * .2; y += (ty - y) * .2; dot.style.transform = `translate(${x}px, ${y}px)`; raf = Math.abs(tx - x) + Math.abs(ty - y) &gt; .2 ? requestAnimationFrame(loop) : 0; };
+  zone.addEventListener('pointermove', e =&gt; {
+    const r = zone.getBoundingClientRect(); tx = e.clientX - r.left; ty = e.clientY - r.top;
+    const label = e.target.closest('[data-cursor]')?.dataset.cursor;
+    dot.classList.toggle('big', !!label); dot.textContent = label || '';
+    if (!raf) raf = requestAnimationFrame(loop);
+  });
+  zone.addEventListener('pointerenter', e =&gt; { const r = zone.getBoundingClientRect(); x = tx = e.clientX - r.left; y = ty = e.clientY - r.top; });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Pointer</span><span class="badge js">JS</span><span class="count">389 / 408</span></div><h3>Color-inverting cursor</h3><p class="desc">A big white circle with <code>mix-blend-mode: difference</code> <b>inverts everything beneath it</b> — black text turns white inside the circle, white turns black — so it stays visible on any background.</p><p class="desc use"><b>On the web:</b> minimalist portfolios, fashion and music sites.</p><div class="demo-box"><div class="stage">
+<span class="hint">move mouse</span>
+<div class="p4-bc" id="p4Bc"><div class="p4-bc-half">Design</div><div class="p4-bc-half light">Studio</div><b></b></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>.cursor { background: #fff; mix-blend-mode: difference; }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;move mouse&lt;/span&gt;
+&lt;div class="p4-bc" id="p4Bc"&gt;&lt;div class="p4-bc-half"&gt;Design&lt;/div&gt;&lt;div class="p4-bc-half light"&gt;Studio&lt;/div&gt;&lt;b&gt;&lt;/b&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-bc { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; cursor: none; isolation: isolate; }
+.p4-bc-half { display: grid; place-items: center; font: 900 2rem system-ui, sans-serif; background: #0c0e14; color: #f8fafc; }
+.p4-bc-half.light { background: #f8fafc; color: #0c0e14; }
+.p4-bc b { position: absolute; left: 0; top: 0; width: 90px; height: 90px; margin: -45px; border-radius: 50%; background: #fff; mix-blend-mode: difference; pointer-events: none; transform: translate(-200px, -200px); transition: width .3s, height .3s, margin .3s; }
+.p4-bc:active b { width: 130px; height: 130px; margin: -65px; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const bc = $('#p4Bc'), ball = $('b', bc);
+  bc.addEventListener('pointermove', e =&gt; {
+    const r = bc.getBoundingClientRect();
+    ball.style.transform = `translate(${e.clientX - r.left}px, ${e.clientY - r.top}px)`;
+  });
+  bc.addEventListener('pointerleave', () =&gt; (ball.style.transform = 'translate(-200px, -200px)'));
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Pointer</span><span class="badge js">JS</span><span class="count">390 / 408</span></div><h3>Image trail</h3><p class="desc">Moving the pointer <b>drops a trail of images</b> that pop in, then shrink away. A new one spawns every 70px of travel, cycling through a set, so slow and fast movement both look good.</p><p class="desc use"><b>On the web:</b> photographer and studio landing pages.</p><div class="demo-box"><div class="stage">
+<span class="hint">move mouse</span>
+<div class="p4-trail" id="p4Trail"><p>Move to leave a trail</p></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>if (Math.hypot(x - lastX, y - lastY) &gt; 70) spawn(x, y);   // distance-based, not time-based</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;move mouse&lt;/span&gt;
+&lt;div class="p4-trail" id="p4Trail"&gt;&lt;p&gt;Move to leave a trail&lt;/p&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-trail { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; }
+.p4-trail p { color: var(--muted); font-size: .9rem; }
+.p4-trail i { position: absolute; left: 0; top: 0; width: 80px; height: 100px; margin: -50px -40px; border-radius: 8px; pointer-events: none; box-shadow: 0 10px 24px rgba(0, 0, 0, .45);
+  animation: p4-trail 1s var(--ease-out) forwards; }
+@keyframes p4-trail {
+  0% { scale: .3; opacity: 0; }
+  15% { scale: 1; opacity: 1; }
+  70% { scale: 1; opacity: 1; }
+  100% { scale: .6; opacity: 0; }
+}</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const tr = $('#p4Trail');
+  const looks = ['linear-gradient(135deg,#7c5cff,#ff5c8a)', 'linear-gradient(135deg,#22d3ee,#34d399)', 'linear-gradient(135deg,#fbbf24,#f97316)', 'linear-gradient(180deg,#fbbf24,#f97316 40%,#7c3aed)', 'linear-gradient(135deg,#ff5c8a,#fbbf24)'];
+  let lx = -999, ly = -999, k = 0;
+  tr.addEventListener('pointermove', e =&gt; {
+    const r = tr.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    if (Math.hypot(x - lx, y - ly) &lt; 70) return;
+    lx = x; ly = y;
+    const img = document.createElement('i');
+    img.style.background = looks[k++ % looks.length];
+    img.style.transform = `translate(${x}px, ${y}px) rotate(${(Math.random() - .5) * 16}deg)`;
+    tr.appendChild(img);
+    img.addEventListener('animationend', () =&gt; img.remove());
+  });
+}</code></pre></div></div></div></article>
+</div>
+</section>
+<!-- ================= 42 SCROLL-3 ================= -->
+<section class="section" id="scroll-3">
+<div class="sec-head reveal"><span class="sec-num">42</span><h2>Scroll layouts</h2></div>
+<p class="sec-intro reveal">Layout patterns where <strong>the scroll itself is the animation</strong>. Most of the work is done by <code>position: sticky</code> and <code>scroll-snap</code>; JavaScript only adds the small reveals. Each demo scrolls inside its own box.</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Scroll</span><span class="count">391 / 408</span></div><h3>Footer reveal</h3><p class="desc">The page content <b>slides up off a footer that was hiding behind it</b>. The footer is <code>position: sticky; bottom: 0</code> with a lower <code>z-index</code>; the content above it has a solid background. Pure CSS.</p><p class="desc use"><b>On the web:</b> agency and portfolio sites with a big "Let's talk" footer.</p><div class="demo-box"><div class="stage">
+<div class="scroll-box p4-fr">
+  <div class="p4-fr-content"><p class="scroll-tip">Scroll to the end</p><i></i><i></i><i></i><i></i></div>
+  <div class="p4-fr-foot"><b>Let's talk ✉</b><span>hello@studio.example</span></div>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>.content { position: relative; z-index: 1; background: var(--bg); }
+.footer  { position: sticky; bottom: 0; z-index: 0; }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="scroll-box p4-fr"&gt;
+  &lt;div class="p4-fr-content"&gt;&lt;p class="scroll-tip"&gt;Scroll to the end&lt;/p&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="p4-fr-foot"&gt;&lt;b&gt;Let's talk ✉&lt;/b&gt;&lt;span&gt;hello@studio.example&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.box { width: 56px; height: 56px; border-radius: 12px; background: var(--grad); box-shadow: 0 8px 24px rgba(124, 92, 255, .35); }
+.box.sm { width: 46px; height: 46px; }
+
+.scroll-box { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #3a4258 transparent; }
+
+.scroll-tip { padding: 70px 16px 10px; text-align: center; color: var(--muted); font-size: .8rem; }
+.scroll-tip::after { content: "↓"; display: block; font-size: 1.2rem; animation: floaty 1s ease-in-out infinite alternate; }
+
+.p4-fr-content { position: relative; z-index: 1; padding: 0 20px 24px; background: var(--panel-2); border-radius: 0 0 20px 20px; box-shadow: 0 16px 30px rgba(0, 0, 0, .5); }
+.p4-fr-content i { display: block; height: 70px; margin-top: 12px; border-radius: 10px; background: var(--panel); }
+.p4-fr-foot { position: sticky; bottom: 0; z-index: 0; height: 170px; display: grid; place-content: center; text-align: center; gap: 6px; background: var(--grad); color: #fff; }
+.p4-fr-foot b { font-size: 1.8rem; }
+.p4-fr-foot span { font-size: .85rem; opacity: .85; }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Scroll</span><span class="badge js">JS</span><span class="count">392 / 408</span></div><h3>Full-height snap sections</h3><p class="desc"><code>scroll-snap-type: y mandatory</code> makes each section <b>lock into place</b>, and as one settles its heading and text <b>rise in</b> (an IntersectionObserver adds the class). One flick = one section.</p><p class="desc use"><b>On the web:</b> product launch pages, presentations, onboarding.</p><div class="demo-box"><div class="stage">
+<div class="scroll-box p4-snap" id="p4Snap">
+  <div class="p4-snap-p" style="--c:#4c1d95"><b>Fast</b><span>Scroll once ↓</span></div>
+  <div class="p4-snap-p" style="--c:#9d174d"><b>Smooth</b><span>Each panel snaps</span></div>
+  <div class="p4-snap-p" style="--c:#155e75"><b>Simple</b><span>One CSS property</span></div>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>.box { scroll-snap-type: y mandatory; }
+.panel { height: 100%; scroll-snap-align: start; }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="scroll-box p4-snap" id="p4Snap"&gt;
+  &lt;div class="p4-snap-p" style="--c:#4c1d95"&gt;&lt;b&gt;Fast&lt;/b&gt;&lt;span&gt;Scroll once ↓&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="p4-snap-p" style="--c:#9d174d"&gt;&lt;b&gt;Smooth&lt;/b&gt;&lt;span&gt;Each panel snaps&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="p4-snap-p" style="--c:#155e75"&gt;&lt;b&gt;Simple&lt;/b&gt;&lt;span&gt;One CSS property&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.box { width: 56px; height: 56px; border-radius: 12px; background: var(--grad); box-shadow: 0 8px 24px rgba(124, 92, 255, .35); }
+.box.sm { width: 46px; height: 46px; }
+
+.scroll-box { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #3a4258 transparent; }
+
+.p4-snap { scroll-snap-type: y mandatory; }
+.p4-snap-p { height: 100%; scroll-snap-align: start; display: grid; place-content: center; text-align: center; gap: 6px; background: var(--c); }
+.p4-snap-p b { font-size: 2.2rem; opacity: 0; transform: translateY(30px); transition: opacity .5s, transform .6s var(--ease-out); }
+.p4-snap-p span { color: rgba(255, 255, 255, .75); opacity: 0; transform: translateY(20px); transition: opacity .5s .12s, transform .6s .12s var(--ease-out); }
+.p4-snap-p.in b, .p4-snap-p.in span { opacity: 1; transform: none; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const box = $('#p4Snap');
+  const io = new IntersectionObserver(es =&gt; es.forEach(e =&gt; e.target.classList.toggle('in', e.isIntersecting)), { root: box, threshold: .6 });
+  $$('.p4-snap-p', box).forEach(p =&gt; io.observe(p));
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Scroll</span><span class="badge js">JS</span><span class="count">393 / 408</span></div><h3>Split screen: sticky visual, scrolling story</h3><p class="desc">The left half <b>stays put</b> (<code>sticky</code>) while the text on the right scrolls; each paragraph that reaches the middle <b>swaps the visual</b> with a cross-fade and a slight zoom.</p><p class="desc use"><b>On the web:</b> feature tours, product storytelling, case studies.</p><div class="demo-box"><div class="stage">
+<div class="scroll-box" id="p4Split"><div class="p4-split">
+  <div class="p4-split-pin"><i class="on" style="--c:linear-gradient(135deg,#7c5cff,#ff5c8a)">①</i><i style="--c:linear-gradient(135deg,#22d3ee,#34d399)">②</i><i style="--c:linear-gradient(135deg,#fbbf24,#f97316)">③</i></div>
+  <div class="p4-split-text"><p><b>Plan.</b> Map the journey before drawing a single screen.</p><p><b>Design.</b> Shape the flow, then the pixels.</p><p><b>Ship.</b> Release small, measure, repeat.</p></div>
+</div></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="scroll-box" id="p4Split"&gt;&lt;div class="p4-split"&gt;
+  &lt;div class="p4-split-pin"&gt;&lt;i class="on" style="--c:linear-gradient(135deg,#7c5cff,#ff5c8a)"&gt;①&lt;/i&gt;&lt;i style="--c:linear-gradient(135deg,#22d3ee,#34d399)"&gt;②&lt;/i&gt;&lt;i style="--c:linear-gradient(135deg,#fbbf24,#f97316)"&gt;③&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="p4-split-text"&gt;&lt;p&gt;&lt;b&gt;Plan.&lt;/b&gt; Map the journey before drawing a single screen.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Design.&lt;/b&gt; Shape the flow, then the pixels.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Ship.&lt;/b&gt; Release small, measure, repeat.&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.box { width: 56px; height: 56px; border-radius: 12px; background: var(--grad); box-shadow: 0 8px 24px rgba(124, 92, 255, .35); }
+.box.sm { width: 46px; height: 46px; }
+
+.scroll-box { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #3a4258 transparent; }
+
+.p4-split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0 14px; }
+.p4-split-pin { position: sticky; top: 0; height: 260px; display: grid; place-items: center; }
+.p4-split-pin i { grid-area: 1 / 1; width: 100%; height: 170px; border-radius: 14px; background: var(--c); display: grid; place-items: center; font-style: normal; font-size: 3rem;
+  opacity: 0; transform: scale(.92); transition: opacity .5s, transform .6s var(--ease-out); }
+.p4-split-pin i.on { opacity: 1; transform: none; }
+.p4-split-text { padding: 100px 0 120px; display: grid; gap: 160px; }
+.p4-split-text p { font-size: .9rem; color: var(--muted); opacity: .35; transition: opacity .4s; }
+.p4-split-text p.on { opacity: 1; }
+.p4-split-text b { color: var(--text); }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const box = $('#p4Split'), pics = $$('.p4-split-pin i', box), paras = $$('.p4-split-text p', box);
+  const io = new IntersectionObserver(es =&gt; es.forEach(e =&gt; {
+    if (!e.isIntersecting) return;
+    const i = paras.indexOf(e.target);
+    paras.forEach((p, k) =&gt; p.classList.toggle('on', k === i)); pics.forEach((p, k) =&gt; p.classList.toggle('on', k === i));
+  }), { root: box, rootMargin: '-45% 0px -45% 0px' });
+  paras.forEach(p =&gt; io.observe(p));
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Scroll</span><span class="badge js">JS</span><span class="count">394 / 408</span></div><h3>Image parallax inside its frame</h3><p class="desc">Each image is taller than its frame and <b>slides more slowly than the page</b>, so it seems to sit further back. JS maps each frame's position in the box (0 → 1) to a small <code>translateY</code>.</p><p class="desc use"><b>On the web:</b> editorial pages, travel sites, portfolio case studies.</p><div class="demo-box"><div class="stage">
+<div class="scroll-box" id="p4Fp"><div class="p4-fp"><p class="scroll-tip">Scroll slowly</p><div><i class="scene"></i></div><div><i class="scene" style="filter:hue-rotate(140deg)"></i></div><div><i class="scene" style="filter:hue-rotate(250deg)"></i></div></div></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>const p = (frameTop - viewTop + frameH) / (viewH + frameH);   // 0 = entering, 1 = leaving
+img.style.transform = `translateY(${(p - .5) * -30}%)`;</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="scroll-box" id="p4Fp"&gt;&lt;div class="p4-fp"&gt;&lt;p class="scroll-tip"&gt;Scroll slowly&lt;/p&gt;&lt;div&gt;&lt;i class="scene"&gt;&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i class="scene" style="filter:hue-rotate(140deg)"&gt;&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i class="scene" style="filter:hue-rotate(250deg)"&gt;&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.box { width: 56px; height: 56px; border-radius: 12px; background: var(--grad); box-shadow: 0 8px 24px rgba(124, 92, 255, .35); }
+.box.sm { width: 46px; height: 46px; }
+
+.scene { position: relative; overflow: hidden; background: linear-gradient(180deg, #fbbf24 0%, #f97316 38%, #7c3aed 100%); }
+.scene::before {
+  content: ""; position: absolute; width: 30%; aspect-ratio: 1; border-radius: 50%;
+  background: #fde68a; left: 50%; top: 18%; transform: translateX(-50%); box-shadow: 0 0 30px #fde68a;
+}
+.scene::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 56%; background: #312e81;
+  clip-path: polygon(0 60%, 18% 25%, 35% 55%, 55% 8%, 75% 50%, 88% 30%, 100% 55%, 100% 100%, 0 100%);
+}
+
+.scroll-box { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #3a4258 transparent; }
+
+.scroll-tip { padding: 70px 16px 10px; text-align: center; color: var(--muted); font-size: .8rem; }
+.scroll-tip::after { content: "↓"; display: block; font-size: 1.2rem; animation: floaty 1s ease-in-out infinite alternate; }
+
+.p4-fp { display: grid; gap: 16px; padding: 0 30px 60px; }
+.p4-fp &gt; div { height: 140px; border-radius: 12px; overflow: hidden; }
+.p4-fp i { display: block; height: 160%; margin-top: -15%; will-change: transform; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const box = $('#p4Fp'), frames = $$('.p4-fp &gt; div', box);
+  const update = () =&gt; {
+    const vh = box.clientHeight;
+    frames.forEach(f =&gt; {
+      const top = f.offsetTop - box.scrollTop, p = clamp((top + f.offsetHeight) / (vh + f.offsetHeight), 0, 1);
+      f.firstElementChild.style.transform = `translateY(${(p - .5) * 30}%)`;
+    });
+  };
+  box.addEventListener('scroll', () =&gt; requestAnimationFrame(update), { passive: true });
+  update();
+}</code></pre></div></div></div></article>
+</div>
+</section>
+<!-- ================= 43 PAGE-LEVEL ================= -->
+<section class="section" id="page-level">
+<div class="sec-head reveal"><span class="sec-num">43</span><h2>Page-level loading</h2></div>
+<p class="sec-intro reveal">Motion that wraps <strong>the whole page</strong>: the intro while assets load and the bar that shows a navigation is in progress. Both should finish as soon as the content is ready — never hold users back to finish an animation.</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Page transition</span><span class="badge js">JS</span><span class="count">395 / 408</span></div><h3>Intro preloader → page reveal</h3><p class="desc">A counter <b>races to 100%</b> (eased, so it slows near the end), then the cover <b>slides up like a curtain</b> and the page's headline rises in behind it. Press Replay to see it again.</p><p class="desc use"><b>On the web:</b> portfolio and agency landing pages, WebGL sites that need to load assets.</p><div class="demo-box"><div class="stage" data-js-replay="preloader">
+<div class="p4-pre" id="p4Pre">
+  <div class="p4-pre-page"><h4><span>Hello,</span> <span>I design</span> <span>motion.</span></h4></div>
+  <div class="p4-pre-cover"><b>0</b><i></i></div>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-pre" id="p4Pre"&gt;
+  &lt;div class="p4-pre-page"&gt;&lt;h4&gt;&lt;span&gt;Hello,&lt;/span&gt; &lt;span&gt;I design&lt;/span&gt; &lt;span&gt;motion.&lt;/span&gt;&lt;/h4&gt;&lt;/div&gt;
+  &lt;div class="p4-pre-cover"&gt;&lt;b&gt;0&lt;/b&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-pre { position: absolute; inset: 0; overflow: hidden; }
+.p4-pre-page { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 30% 20%, rgba(124, 92, 255, .25), transparent 60%), var(--panel-2); }
+.p4-pre-page h4 { font-size: 1.7rem; font-weight: 900; text-align: center; }
+.p4-pre-page span { display: inline-block; opacity: 0; transform: translateY(30px); }
+.p4-pre.done .p4-pre-page span { opacity: 1; transform: none; transition: opacity .6s, transform .8s var(--ease-out); }
+.p4-pre.done .p4-pre-page span:nth-child(2) { transition-delay: .1s; } .p4-pre.done .p4-pre-page span:nth-child(3) { transition-delay: .2s; }
+.p4-pre-cover { position: absolute; inset: 0; z-index: 2; display: grid; place-content: center; gap: 10px; background: #050608; transition: transform .8s cubic-bezier(.76, 0, .24, 1); }
+.p4-pre-cover b { font: 900 3.4rem/1 var(--mono); text-align: center; }
+.p4-pre-cover i { width: 160px; height: 2px; background: #2a3142; position: relative; }
+.p4-pre-cover i::after { content: ""; position: absolute; inset: 0; background: var(--grad); transform-origin: left; transform: scaleX(var(--p, 0)); }
+.p4-pre.done .p4-pre-cover { transform: translateY(-100%); }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const pre = $('#p4Pre'), cover = $('.p4-pre-cover', pre), num = $('b', cover);
+  let raf = 0;
+  const run = () =&gt; {
+    cancelAnimationFrame(raf); pre.classList.remove('done');
+    const t0 = performance.now();
+    const tick = now =&gt; {
+      const p = Math.min(1, (now - t0) / 1800), e = 1 - Math.pow(1 - p, 3);
+      num.textContent = Math.round(e * 100); cover.style.setProperty('--p', e);
+      if (p &lt; 1) raf = requestAnimationFrame(tick); else setTimeout(() =&gt; pre.classList.add('done'), 200);
+    };
+    raf = requestAnimationFrame(tick);
+  };
+  replayHandlers.preloader = run;
+  new IntersectionObserver((es, o) =&gt; { if (es[0].isIntersecting) { run(); o.disconnect(); } }, { threshold: .6 }).observe(pre);
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Page transition</span><span class="badge js">JS</span><span class="count">396 / 408</span></div><h3>Top-of-page loading bar</h3><p class="desc">Clicking a link starts a thin bar that <b>trickles forward in smaller and smaller steps</b> (it never claims to be done), then <b>snaps to 100% and fades</b> once the "page" has loaded — the pattern popularised by YouTube and GitHub.</p><p class="desc use"><b>On the web:</b> single-page apps, Turbo/HTMX sites, any client-side navigation.</p><div class="demo-box"><div class="stage">
+<div class="p4-tb" id="p4Tb"><div class="p4-tb-bar"><i></i></div><nav><a href="#page-level" class="on">Home</a><a href="#page-level">Pricing</a><a href="#page-level">Blog</a></nav><div class="p4-tb-page"><h4>Home</h4><p></p><p></p></div></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>trickle: p += (0.9 - p) * 0.15;      // approaches 90% but never reaches it
+done:    p = 1; then fade out and reset</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-tb" id="p4Tb"&gt;&lt;div class="p4-tb-bar"&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&lt;nav&gt;&lt;a href="#page-level" class="on"&gt;Home&lt;/a&gt;&lt;a href="#page-level"&gt;Pricing&lt;/a&gt;&lt;a href="#page-level"&gt;Blog&lt;/a&gt;&lt;/nav&gt;&lt;div class="p4-tb-page"&gt;&lt;h4&gt;Home&lt;/h4&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-tb { position: relative; width: min(360px, 94%); height: 200px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.p4-tb-bar { position: absolute; left: 0; right: 0; top: 0; height: 3px; }
+.p4-tb-bar i { display: block; height: 100%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); transform-origin: left; transform: scaleX(var(--p, 0)); transition: transform .3s ease-out, opacity .4s; opacity: 0; }
+.p4-tb-bar.on i { opacity: 1; }
+.p4-tb nav { display: flex; gap: 4px; padding: 12px 12px 0; }
+.p4-tb nav a { padding: 6px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: .82rem; font-weight: 600; }
+.p4-tb nav a.on { color: var(--text); background: var(--panel-2); }
+.p4-tb-page { padding: 14px 16px; transition: opacity .25s; }
+.p4-tb-page.loading { opacity: .4; }
+.p4-tb-page h4 { margin-bottom: 10px; animation: p4-in .35s var(--ease-out); }
+.p4-tb-page p { height: 10px; border-radius: 5px; background: #2a3142; margin-top: 10px; }
+.p4-tb-page p + p { width: 70%; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const tb = $('#p4Tb'), bar = $('.p4-tb-bar', tb), fill = $('i', bar), page = $('.p4-tb-page', tb);
+  let p = 0, timer = 0;
+  const set = v =&gt; fill.style.setProperty('--p', (p = v));
+  $$('nav a', tb).forEach(a =&gt; a.addEventListener('click', e =&gt; {
+    e.preventDefault(); clearInterval(timer);
+    $$('nav a', tb).forEach(x =&gt; x.classList.toggle('on', x === a));
+    bar.classList.add('on'); set(.08); page.classList.add('loading');
+    timer = setInterval(() =&gt; set(p + (0.9 - p) * .15), 200);               // trickle
+    setTimeout(() =&gt; {                                                       // "page loaded"
+      clearInterval(timer); set(1);
+      const h = $('h4', page); h.textContent = a.textContent; h.style.animation = 'none'; void h.offsetWidth; h.style.animation = ''; page.classList.remove('loading'); // replay the heading's entrance
+      setTimeout(() =&gt; { bar.classList.remove('on'); setTimeout(() =&gt; set(0), 400); }, 300);
+    }, 900 + Math.random() * 900);
+  }));
+}</code></pre></div></div></div></article>
+</div>
+</section>
+<!-- ================= 44 MEDIA-3 ================= -->
+<section class="section" id="media-3">
+<div class="sec-head reveal"><span class="sec-num">44</span><h2>Image &amp; media effects, part 3</h2></div>
+<p class="sec-intro reveal">Two techniques for making a still or moving picture interactive and expressive.</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Image &amp; media</span><span class="badge js">JS</span><span class="count">397 / 408</span></div><h3>Pulsing image hotspots</h3><p class="desc">Dots on the picture <b>pulse to invite a tap</b>; opening one <b>grows a card out of the dot</b> and closes any other. Each hotspot is a button positioned in percentages, so it stays on target at any size.</p><p class="desc use"><b>On the web:</b> shoppable photos, interactive product diagrams, museum and real-estate tours.</p><div class="demo-box"><div class="stage">
+<div class="p4-hot scene" id="p4Hot">
+  <button type="button" style="--x:50%;--y:24%" aria-label="The sun"><span>☀️ <b>Sun</b> — 5,500 °C at the surface</span></button>
+  <button type="button" style="--x:28%;--y:70%" aria-label="West peak"><span>⛰ <b>West peak</b> — 2,140 m</span></button>
+  <button type="button" style="--x:74%;--y:66%" aria-label="Trail"><span>🥾 <b>Trail</b> — 4 h round trip</span></button>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-hot scene" id="p4Hot"&gt;
+  &lt;button type="button" style="--x:50%;--y:24%" aria-label="The sun"&gt;&lt;span&gt;☀️ &lt;b&gt;Sun&lt;/b&gt; — 5,500 °C at the surface&lt;/span&gt;&lt;/button&gt;
+  &lt;button type="button" style="--x:28%;--y:70%" aria-label="West peak"&gt;&lt;span&gt;⛰ &lt;b&gt;West peak&lt;/b&gt; — 2,140 m&lt;/span&gt;&lt;/button&gt;
+  &lt;button type="button" style="--x:74%;--y:66%" aria-label="Trail"&gt;&lt;span&gt;🥾 &lt;b&gt;Trail&lt;/b&gt; — 4 h round trip&lt;/span&gt;&lt;/button&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.scene { position: relative; overflow: hidden; background: linear-gradient(180deg, #fbbf24 0%, #f97316 38%, #7c3aed 100%); }
+.scene::before {
+  content: ""; position: absolute; width: 30%; aspect-ratio: 1; border-radius: 50%;
+  background: #fde68a; left: 50%; top: 18%; transform: translateX(-50%); box-shadow: 0 0 30px #fde68a;
+}
+.scene::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 56%; background: #312e81;
+  clip-path: polygon(0 60%, 18% 25%, 35% 55%, 55% 8%, 75% 50%, 88% 30%, 100% 55%, 100% 100%, 0 100%);
+}
+
+.p4-hot { width: 300px; height: 190px; border-radius: 12px; overflow: visible; }
+.p4-hot button { position: absolute; left: var(--x); top: var(--y); z-index: 3; width: 18px; height: 18px; margin: -9px; padding: 0; border-radius: 50%; border: 3px solid #fff; background: var(--pink); }
+.p4-hot button::before { content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid #fff; animation: p4-hotPing 1.8s ease-out infinite; }
+.p4-hot span { position: absolute; left: 50%; bottom: calc(100% + 10px); width: max-content; max-width: 180px; padding: 7px 10px; border-radius: 10px; background: #fff; color: #0c0e14; font-size: .76rem; text-align: left;
+  transform-origin: 50% 100%; transform: translateX(-50%) scale(0); opacity: 0; transition: transform .3s var(--ease-back), opacity .2s; pointer-events: none; }
+.p4-hot button.on { z-index: 4; }
+.p4-hot button.on span { transform: translateX(-50%) scale(1); opacity: 1; }
+.p4-hot button.on::before { animation: none; }
+@keyframes p4-hotPing { from { transform: scale(1); opacity: .9; } to { transform: scale(2.6); opacity: 0; } }
+@media (max-width: 420px) { .p4-hot { width: 260px; } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const hot = $('#p4Hot'), btns = $$('button', hot);
+  btns.forEach(b =&gt; b.addEventListener('click', e =&gt; { e.stopPropagation(); const on = !b.classList.contains('on'); btns.forEach(x =&gt; x.classList.remove('on')); b.classList.toggle('on', on); }));
+  document.addEventListener('click', () =&gt; btns.forEach(x =&gt; x.classList.remove('on')));
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Image &amp; media</span><span class="count">398 / 408</span></div><h3>Moving content seen through text</h3><p class="desc">A black layer with white text uses <code>mix-blend-mode: multiply</code>, which <b>knocks the letters out</b>: black stays black, white shows whatever moves underneath. Here it's drifting color blobs; put a <code>&lt;video&gt;</code> underneath and you get video-in-text.</p><p class="desc use"><b>On the web:</b> music and film sites, sports brands, event hero banners.</p><div class="demo-box"><div class="stage">
+<div class="p4-ko"><div class="p4-ko-under"><i></i><i></i><i></i></div><div class="p4-ko-mask">MOTION</div></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>.under  { /* any moving content: blobs, a &lt;video&gt;, a canvas */ }
+.mask   { background: #000; color: #fff; mix-blend-mode: multiply; }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-ko"&gt;&lt;div class="p4-ko-under"&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class="p4-ko-mask"&gt;MOTION&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-ko { position: absolute; inset: 0; isolation: isolate; }
+.p4-ko-under { position: absolute; inset: 0; background: #1e1b4b; overflow: hidden; }
+.p4-ko-under i { position: absolute; width: 220px; height: 220px; border-radius: 50%; filter: blur(10px); animation: p4-koDrift 7s ease-in-out infinite alternate; }
+.p4-ko-under i:nth-child(1) { background: #ff5c8a; left: -40px; top: -40px; }
+.p4-ko-under i:nth-child(2) { background: #22d3ee; right: -50px; top: 10px; animation-duration: 9s; animation-direction: alternate-reverse; }
+.p4-ko-under i:nth-child(3) { background: #fbbf24; left: 35%; bottom: -120px; animation-duration: 6s; }
+.p4-ko-mask { position: absolute; inset: 0; display: grid; place-items: center; background: #000; color: #fff; mix-blend-mode: multiply; font: 900 clamp(3rem, 12vw, 6rem)/1 system-ui, sans-serif; letter-spacing: -.02em; }
+@keyframes p4-koDrift { to { transform: translate(120px, 60px) scale(1.3); } }</code></pre></div></div></div></article>
+</div>
+</section>
+<!-- ================= 45 DATA-2 ================= -->
+<section class="section" id="data-2">
+<div class="sec-head reveal"><span class="sec-num">45</span><h2>Data visualization, part 2</h2></div>
+<p class="sec-intro reveal">Animate data to explain <strong>change</strong>: what grew, what overtook what, where something went. Keep chart motion under a second, ease-out, and make sure the final frame is a correct, readable chart on its own.</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Data viz</span><span class="badge js">JS</span><span class="count">399 / 408</span></div><h3>Pie chart with pop-out slices</h3><p class="desc">Slices are drawn from data with SVG arcs and <b>sweep in one after another</b>. Hovering a slice <b>pushes it outward along its middle angle</b> and shows its value in the center.</p><p class="desc use"><b>On the web:</b> budget breakdowns, survey results, storage usage.</p><div class="demo-box"><div class="stage">
+<span class="hint">hover slices</span>
+<div class="p4-pie" id="p4Pie"><svg viewBox="-110 -110 220 220" width="190"></svg><div><b>100%</b><span>Total</span></div></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>const mid = (start + end) / 2;
+slice.style.transform = `translate(${Math.cos(mid) * 10}px, ${Math.sin(mid) * 10}px)`;</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;hover slices&lt;/span&gt;
+&lt;div class="p4-pie" id="p4Pie"&gt;&lt;svg viewBox="-110 -110 220 220" width="190"&gt;&lt;/svg&gt;&lt;div&gt;&lt;b&gt;100%&lt;/b&gt;&lt;span&gt;Total&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-pie { position: relative; display: grid; place-items: center; }
+.p4-pie svg { overflow: visible; }
+.p4-pie path { stroke: var(--panel-2); stroke-width: 3; cursor: pointer; transition: transform .3s var(--ease-back), filter .3s; animation: p4-pieIn .5s var(--ease-out) backwards; /* backwards, so hover transforms still apply afterwards */ animation-delay: calc(var(--i) * 120ms); transform-origin: 0 0; }
+.p4-pie path:hover { transform: translate(var(--dx), var(--dy)); filter: brightness(1.15); }
+.p4-pie &gt; div { position: absolute; display: grid; text-align: center; pointer-events: none; }
+.p4-pie b { font-size: 1.4rem; }
+.p4-pie span { font-size: .72rem; color: var(--muted); }
+@keyframes p4-pieIn { from { transform: scale(.4) rotate(-40deg); opacity: 0; } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const pie = $('#p4Pie'), svg = $('svg', pie), label = $('b', pie), name = $('span', pie);
+  const data = [['Design', 38, '#7c5cff'], ['Code', 27, '#ff5c8a'], ['Testing', 20, '#22d3ee'], ['Docs', 15, '#fbbf24']];
+  let a = -Math.PI / 2;
+  data.forEach(([n, v, c], i) =&gt; {
+    const b = a + v / 100 * Math.PI * 2, R = 100, r = 52, mid = (a + b) / 2, large = b - a &gt; Math.PI ? 1 : 0;
+    const P = (ang, rad) =&gt; `${Math.cos(ang) * rad} ${Math.sin(ang) * rad}`;
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M ${P(a, R)} A ${R} ${R} 0 ${large} 1 ${P(b, R)} L ${P(b, r)} A ${r} ${r} 0 ${large} 0 ${P(a, r)} Z`);
+    path.setAttribute('fill', c);
+    path.style.cssText = `--i:${i};--dx:${Math.cos(mid) * 10}px;--dy:${Math.sin(mid) * 10}px`;
+    path.addEventListener('pointerenter', () =&gt; { label.textContent = v + '%'; name.textContent = n; });
+    path.addEventListener('pointerleave', () =&gt; { label.textContent = '100%'; name.textContent = 'Total'; });
+    svg.appendChild(path); a = b;
+  });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Data viz</span><span class="count">400 / 408</span></div><h3>Sparkline draw</h3><p class="desc">A tiny trend line <b>draws itself</b>, the area under it fades in, and the latest point <b>pulses</b> — a whole chart in a line of text, next to a number that matters.</p><p class="desc use"><b>On the web:</b> stock tickers, KPI cards, analytics tables.</p><div class="demo-box"><div class="stage" data-loop="">
+<div class="p4-spark"><div><small>Revenue</small><b>$48.2k</b><em>▲ 12.4%</em></div><svg viewBox="0 0 160 50" width="200" height="62"><path class="area" d="M0 40 L20 34 L40 37 L60 26 L80 29 L100 18 L120 22 L140 10 L160 6 L160 50 L0 50 Z"/><path class="line" pathLength="1" d="M0 40 L20 34 L40 37 L60 26 L80 29 L100 18 L120 22 L140 10 L160 6"/><circle cx="160" cy="6" r="3.5"/></svg></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-spark"&gt;&lt;div&gt;&lt;small&gt;Revenue&lt;/small&gt;&lt;b&gt;$48.2k&lt;/b&gt;&lt;em&gt;▲ 12.4%&lt;/em&gt;&lt;/div&gt;&lt;svg viewBox="0 0 160 50" width="200" height="62"&gt;&lt;path class="area" d="M0 40 L20 34 L40 37 L60 26 L80 29 L100 18 L120 22 L140 10 L160 6 L160 50 L0 50 Z"/&gt;&lt;path class="line" pathLength="1" d="M0 40 L20 34 L40 37 L60 26 L80 29 L100 18 L120 22 L140 10 L160 6"/&gt;&lt;circle cx="160" cy="6" r="3.5"/&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-spark { display: flex; align-items: center; gap: 18px; padding: 16px 20px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); }
+.p4-spark &gt; div { display: grid; }
+.p4-spark small { font-size: .72rem; color: var(--muted); }
+.p4-spark b { font-size: 1.5rem; }
+.p4-spark em { font-style: normal; font-size: .75rem; color: var(--green); }
+.p4-spark svg { overflow: visible; }
+.p4-spark .line { fill: none; stroke: var(--green); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: p4-draw 1.2s var(--ease-out) forwards; }
+.p4-spark .area { fill: rgba(52, 211, 153, .15); opacity: 0; animation: p4-fadeIn .6s .9s forwards; }
+.p4-spark circle { fill: var(--green); transform-origin: 160px 6px; transform: scale(0); animation: p4-dotIn .3s 1.1s var(--ease-back) forwards, p4-dotPulse 1.6s 1.5s ease-out infinite; }
+@keyframes p4-draw { to { stroke-dashoffset: 0; } }
+@keyframes p4-fadeIn { to { opacity: 1; } }
+@keyframes p4-dotIn { to { transform: scale(1); } }
+@keyframes p4-dotPulse { 0% { transform: scale(1); } 30% { transform: scale(1.7); opacity: .6; } 60%, 100% { transform: scale(1); opacity: 1; } }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Data viz</span><span class="badge js">JS</span><span class="count">401 / 408</span></div><h3>Activity heatmap</h3><p class="desc">A year-of-activity grid whose cells <b>fill in as a diagonal wave</b> (delay = column + row). Darker cells mean more activity. Hover a cell for its count.</p><p class="desc use"><b>On the web:</b> contribution graphs, habit trackers, usage calendars.</p><div class="demo-box"><div class="stage" data-loop="">
+<div class="p4-heat" id="p4Heat"></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>cell.style.setProperty('--d', (col + row) * 18 + 'ms');   /* diagonal wave */</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-heat" id="p4Heat"&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-heat { display: grid; grid-template-rows: repeat(7, 12px); grid-auto-flow: column; grid-auto-columns: 12px; gap: 3px; }
+.p4-heat i { border-radius: 3px; background: var(--c); animation: p4-cell .4s var(--ease-back) both; animation-delay: var(--d); }
+.p4-heat i:hover { outline: 2px solid #fff; }
+@keyframes p4-cell { from { transform: scale(0); opacity: 0; } }
+@media (max-width: 520px) { .p4-heat { grid-auto-columns: 9px; grid-template-rows: repeat(7, 9px); gap: 2px; } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const heat = $('#p4Heat'), shades = ['#1b202c', '#3b2f7a', '#5b45c9', '#7c5cff', '#b3a3ff'];
+  const cols = innerWidth &lt; 520 ? 22 : 26;
+  for (let c = 0; c &lt; cols; c++) for (let r = 0; r &lt; 7; r++) {
+    const v = Math.max(0, Math.round(Math.sin(c * .5 + r) * 2 + Math.random() * 3 - .5)), lvl = Math.min(4, v);
+    const i = document.createElement('i');
+    i.style.cssText = `--c:${shades[lvl]};--d:${(c + r) * 18}ms`; i.title = v * 3 + ' contributions';
+    heat.appendChild(i);
+  }
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Data viz</span><span class="count">402 / 408</span></div><h3>Route drawn on a map</h3><p class="desc">The route <b>draws itself</b> while a marker <b>drives along the same path</b> and turns with the road. The marker uses CSS Motion Path — <code>offset-path: path(…)</code> + <code>offset-distance</code> — with the same path data as the SVG line.</p><p class="desc use"><b>On the web:</b> delivery tracking, ride-hailing, travel itineraries, run trackers.</p><div class="demo-box"><div class="stage" data-loop="">
+<div class="p4-route"><svg viewBox="0 0 300 180" width="300" height="180"><g class="roads"><path d="M0 40 H300 M0 110 H300 M70 0 V180 M190 0 V180 M250 0 V180"/></g><path class="trip" pathLength="1" d="M30 150 C 80 150 70 110 120 110 S 190 110 190 70 S 230 40 270 40"/><circle cx="30" cy="150" r="6"/><circle class="end" cx="270" cy="40" r="7"/></svg><i class="p4-car">➤</i></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>.car { offset-path: path("M30 150 C 80 150 …"); offset-rotate: auto;
+       animation: drive 3s ease-in-out forwards; }
+@keyframes drive { from { offset-distance: 0%; } to { offset-distance: 100%; } }</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-route"&gt;&lt;svg viewBox="0 0 300 180" width="300" height="180"&gt;&lt;g class="roads"&gt;&lt;path d="M0 40 H300 M0 110 H300 M70 0 V180 M190 0 V180 M250 0 V180"/&gt;&lt;/g&gt;&lt;path class="trip" pathLength="1" d="M30 150 C 80 150 70 110 120 110 S 190 110 190 70 S 230 40 270 40"/&gt;&lt;circle cx="30" cy="150" r="6"/&gt;&lt;circle class="end" cx="270" cy="40" r="7"/&gt;&lt;/svg&gt;&lt;i class="p4-car"&gt;➤&lt;/i&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-route { position: relative; width: 300px; height: 180px; border-radius: 12px; overflow: hidden; background: #111827; }
+.p4-route svg { position: absolute; inset: 0; }
+.p4-route .roads path { fill: none; stroke: #263043; stroke-width: 10; }
+.p4-route .trip { fill: none; stroke: var(--cyan); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: p4-draw 3s ease-in-out forwards; }
+.p4-route circle { fill: var(--cyan); }
+.p4-route circle.end { fill: var(--pink); animation: p4-dotIn .3s 3s var(--ease-back) both; transform-origin: 270px 40px; }
+.p4-car { position: absolute; left: 0; top: 0; font-style: normal; color: #fff; font-size: 18px; line-height: 1;
+  offset-path: path("M30 150 C 80 150 70 110 120 110 S 190 110 190 70 S 230 40 270 40"); offset-rotate: auto; animation: p4-drive 3s ease-in-out forwards; }
+@keyframes p4-drive { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+@media (max-width: 420px) { .p4-route { transform: scale(.85); } }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Data viz</span><span class="badge js">JS</span><span class="count">403 / 408</span></div><h3>Bar chart race</h3><p class="desc">Values change every couple of seconds; bars <b>grow or shrink</b>, numbers <b>count to their new value</b>, and rows <b>slide past each other</b> when the ranking changes. Each row's position is just <code>translateY(rank × height)</code> with a transition.</p><p class="desc use"><b>On the web:</b> leaderboards, election results, "most popular" rankings.</p><div class="demo-box"><div class="stage">
+<div class="p4-race2" id="p4Race2"></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>row.style.transform = `translateY(${rank * 34}px)`;     /* reorder = move, never re-insert */
+bar.style.transform = `scaleX(${value / max})`;</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-race2" id="p4Race2"&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-race2 { position: relative; width: min(340px, 92%); height: 170px; }
+.p4-race2 &gt; div { position: absolute; left: 0; right: 0; top: 0; height: 28px; display: grid; grid-template-columns: 74px 1fr 52px; align-items: center; gap: 8px; transition: transform .6s var(--ease-out); }
+.p4-race2 span { font-size: .8rem; font-weight: 600; }
+.p4-race2 i { height: 20px; border-radius: 5px; background: var(--c); transform-origin: left; transition: transform .6s var(--ease-out); }
+.p4-race2 b { font: 700 .8rem var(--mono); text-align: right; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const race = $('#p4Race2');
+  const rows = [['React', '#22d3ee'], ['Vue', '#34d399'], ['Svelte', '#ff5c8a'], ['Angular', '#e11d48'], ['Solid', '#7c5cff']].map(([n, c], k) =&gt; {
+    const el = document.createElement('div');
+    el.innerHTML = `&lt;span&gt;${n}&lt;/span&gt;&lt;i style="--c:${c}"&gt;&lt;/i&gt;&lt;b&gt;0&lt;/b&gt;`; race.appendChild(el);
+    return { el, bar: $('i', el), num: $('b', el), v: 40 + k * 12, shown: 0 };
+  });
+  const tween = r =&gt; {
+    const from = r.shown, to = Math.round(r.v), t0 = performance.now();
+    const step = now =&gt; { const p = Math.min(1, (now - t0) / 600); r.shown = from + (to - from) * (1 - Math.pow(1 - p, 3)); r.num.textContent = Math.round(r.shown); if (p &lt; 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  };
+  const render = () =&gt; {
+    const max = Math.max(...rows.map(r =&gt; r.v));
+    [...rows].sort((a, b) =&gt; b.v - a.v).forEach((r, rank) =&gt; { r.el.style.transform = `translateY(${rank * 34}px)`; r.bar.style.transform = `scaleX(${r.v / max})`; tween(r); });
+  };
+  render();
+  setInterval(() =&gt; { if (!live(race)) return; rows.forEach(r =&gt; (r.v = Math.max(5, r.v + (Math.random() - .45) * 26))); render(); }, 2000);
+}</code></pre></div></div></div></article>
+</div>
+</section>
+<!-- ================= 46 GAMES ================= -->
+<section class="section" id="games">
+<div class="sec-head reveal"><span class="sec-num">46</span><h2>Games &amp; commerce</h2></div>
+<p class="sec-intro reveal">Playful mechanics borrowed from games — scratch, spin, roll — plus two shop staples. Rewards should feel <strong>earned</strong>: anticipation (the spin slowing down) makes the result land harder than an instant answer.</p>
+<div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Celebration</span><span class="badge js">JS</span><span class="count">404 / 408</span></div><h3>Scratch card</h3><p class="desc">Rub the silver coating off with the pointer: a canvas paints with <code>destination-out</code>, which <b>erases</b> instead of drawing. Once about half is gone, the rest <b>fades away</b> and the prize pops.</p><p class="desc use"><b>On the web:</b> promo codes, giveaways, gamified onboarding.</p><div class="demo-box"><div class="stage">
+<span class="hint">scratch it</span>
+<div class="p4-scratch" id="p4Scratch"><div class="p4-scratch-prize"><b>-25%</b><span>Code: MOTION25</span></div><canvas></canvas><button type="button" class="p4-btn">Reset</button></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>ctx.globalCompositeOperation = 'destination-out';   // drawing now erases
+ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill();</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;span class="hint"&gt;scratch it&lt;/span&gt;
+&lt;div class="p4-scratch" id="p4Scratch"&gt;&lt;div class="p4-scratch-prize"&gt;&lt;b&gt;-25%&lt;/b&gt;&lt;span&gt;Code: MOTION25&lt;/span&gt;&lt;/div&gt;&lt;canvas&gt;&lt;/canvas&gt;&lt;button type="button" class="p4-btn"&gt;Reset&lt;/button&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-scratch { position: relative; width: 260px; height: 140px; border-radius: 14px; overflow: hidden; touch-action: none; }
+.p4-scratch-prize { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; background: var(--grad); }
+.p4-scratch-prize b { font-size: 2.4rem; font-weight: 900; }
+.p4-scratch-prize span { font: 600 .8rem var(--mono); }
+.p4-scratch.won .p4-scratch-prize b { animation: p4-pop .5s var(--ease-back); }
+.p4-scratch canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity .5s; }
+.p4-scratch.won canvas { opacity: 0; pointer-events: none; }
+.p4-scratch .p4-btn { position: absolute; right: 8px; bottom: 8px; padding: 4px 9px; font-size: .7rem; opacity: 0; transition: opacity .3s; }
+.p4-scratch.won .p4-btn { opacity: 1; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const sc = $('#p4Scratch'), cv = $('canvas', sc), ctx = cv.getContext('2d');
+  let down = false, moves = 0;
+  const paint = () =&gt; {
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    cv.width = sc.clientWidth * dpr; cv.height = sc.clientHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const g = ctx.createLinearGradient(0, 0, sc.clientWidth, sc.clientHeight);
+    g.addColorStop(0, '#9ca3af'); g.addColorStop(.5, '#e5e7eb'); g.addColorStop(1, '#9ca3af');
+    ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = g; ctx.fillRect(0, 0, sc.clientWidth, sc.clientHeight);
+    ctx.fillStyle = '#4b5563'; ctx.font = '700 15px system-ui'; ctx.textAlign = 'center'; ctx.fillText('SCRATCH HERE', sc.clientWidth / 2, sc.clientHeight / 2 + 5);
+    sc.classList.remove('won');
+  };
+  const cleared = () =&gt; { const d = ctx.getImageData(0, 0, cv.width, cv.height).data; let clear = 0, n = 0; for (let i = 3; i &lt; d.length; i += 64) { n++; if (d[i] === 0) clear++; } return clear / n; };
+  const scratch = e =&gt; {
+    const r = cv.getBoundingClientRect();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath(); ctx.arc(e.clientX - r.left, e.clientY - r.top, 18, 0, Math.PI * 2); ctx.fill();
+    if (++moves % 8 === 0 &amp;&amp; cleared() &gt; .5) sc.classList.add('won');
+  };
+  cv.addEventListener('pointerdown', e =&gt; { down = true; cv.setPointerCapture(e.pointerId); scratch(e); });
+  cv.addEventListener('pointermove', e =&gt; { if (down) scratch(e); });
+  cv.addEventListener('pointerup', () =&gt; (down = false));
+  $('.p4-btn', sc).addEventListener('click', paint);
+  paint();
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Celebration</span><span class="badge js">JS</span><span class="count">405 / 408</span></div><h3>Prize wheel</h3><p class="desc">The wheel <b>whips round several times and slowly coasts</b> to a stop on a random prize (a long ease-out transition on <code>rotate</code>). The pointer <b>flicks</b> as segments pass, and the winning prize is announced.</p><p class="desc use"><b>On the web:</b> promotions, giveaways, classroom pickers.</p><div class="demo-box"><div class="stage">
+<div class="p4-wheel" id="p4Wheel"><div class="p4-wheel-disc"></div><b class="p4-wheel-pin"></b><button type="button" class="p4-btn primary">SPIN</button><output>Spin to win!</output></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>angle += 360 * 5 + (360 - prizeIndex * 45) - angle % 360;   // 5 full turns, land on the prize
+wheel.style.transition = 'rotate 4s cubic-bezier(.12, .8, .2, 1)';
+wheel.style.rotate = angle + 'deg';</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-wheel" id="p4Wheel"&gt;&lt;div class="p4-wheel-disc"&gt;&lt;/div&gt;&lt;b class="p4-wheel-pin"&gt;&lt;/b&gt;&lt;button type="button" class="p4-btn primary"&gt;SPIN&lt;/button&gt;&lt;output&gt;Spin to win!&lt;/output&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-wheel { position: relative; display: grid; justify-items: center; gap: 8px; }
+.p4-wheel-disc { position: relative; width: 170px; height: 170px; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+  background: conic-gradient(from -22.5deg, #7c5cff 0 45deg, #ff5c8a 0 90deg, #22d3ee 0 135deg, #fbbf24 0 180deg, #34d399 0 225deg, #f97316 0 270deg, #a78bfa 0 315deg, #e11d48 0 360deg); }
+.p4-wheel-disc span { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform: rotate(var(--a)); font: 800 .72rem system-ui; }
+.p4-wheel-disc span::after { content: attr(data-t); position: absolute; left: 0; top: -70px; transform: translateX(-50%); white-space: nowrap; color: #0c0e14; }
+.p4-wheel-pin { position: absolute; top: -8px; width: 0; height: 0; border: 12px solid transparent; border-top: 20px solid #fff; border-bottom: 0; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .5)); transform-origin: 50% 0; }
+.p4-wheel.spinning .p4-wheel-pin { animation: p4-flick .12s ease-in-out infinite alternate; }
+.p4-wheel output { font-size: .85rem; font-weight: 700; min-height: 1.2em; }
+.p4-wheel output.p4-win { animation: p4-pop .4s var(--ease-back); color: var(--amber); }
+.p4-wheel .p4-btn { position: absolute; top: 61px; width: 58px; height: 58px; padding: 0; border-radius: 50%; border: 4px solid #fff; font-size: .75rem; font-weight: 900; }
+@keyframes p4-flick { from { transform: rotate(0); } to { transform: rotate(-18deg); } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const w = $('#p4Wheel'), disc = $('.p4-wheel-disc', w), out = $('output', w);
+  const prizes = ['10% off', 'Free ship', '🎁 Gift', 'Try again', '20% off', 'Sticker', '50% off', '🍀 Lucky'];
+  prizes.forEach((p, i) =&gt; disc.insertAdjacentHTML('beforeend', `&lt;span style="--a:${i * 45}deg" data-t="${p}"&gt;&lt;/span&gt;`));
+  let angle = 0, busy = false;
+  $('.p4-btn', w).addEventListener('click', () =&gt; {
+    if (busy) return; busy = true;
+    const k = Math.floor(Math.random() * prizes.length);
+    angle += 360 * 5 + ((360 - k * 45) - (angle % 360) + 360) % 360;
+    disc.style.transition = 'rotate 4s cubic-bezier(.12, .8, .2, 1)'; disc.style.rotate = angle + 'deg';
+    w.classList.add('spinning'); out.classList.remove('p4-win'); out.textContent = 'Spinning…';
+    setTimeout(() =&gt; w.classList.remove('spinning'), 2600);
+    disc.addEventListener('transitionend', () =&gt; { busy = false; out.textContent = 'You got: ' + prizes[k]; restart(out, 'p4-win'); }, { once: true });
+  });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Celebration</span><span class="badge js">JS</span><span class="count">406 / 408</span></div><h3>3D dice roll</h3><p class="desc">A real six-sided cube <b>tumbles through several turns</b> and lands showing a random face — the target rotation for each face plus extra full spins, on a decelerating curve.</p><p class="desc use"><b>On the web:</b> board-game sites, random pickers, playful "surprise me" buttons.</p><div class="demo-box"><div class="stage">
+<div class="p4-dice" id="p4Dice"><div class="p4-die"><i data-n="1"></i><i data-n="2"></i><i data-n="3"></i><i data-n="4"></i><i data-n="5"></i><i data-n="6"></i></div><button type="button" class="p4-btn primary">Roll 🎲</button><output></output></div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>const face = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0, 180] }[roll];
+cube.style.transform = `rotateX(${face[0] + 720}deg) rotateY(${face[1] + 720}deg)`;</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-dice" id="p4Dice"&gt;&lt;div class="p4-die"&gt;&lt;i data-n="1"&gt;&lt;/i&gt;&lt;i data-n="2"&gt;&lt;/i&gt;&lt;i data-n="3"&gt;&lt;/i&gt;&lt;i data-n="4"&gt;&lt;/i&gt;&lt;i data-n="5"&gt;&lt;/i&gt;&lt;i data-n="6"&gt;&lt;/i&gt;&lt;/div&gt;&lt;button type="button" class="p4-btn primary"&gt;Roll 🎲&lt;/button&gt;&lt;output&gt;&lt;/output&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-dice { display: grid; justify-items: center; gap: 16px; perspective: 700px; }
+.p4-die { position: relative; width: 80px; height: 80px; transform-style: preserve-3d; transform: rotateX(-20deg) rotateY(30deg); transition: transform 1.4s cubic-bezier(.2, .8, .3, 1); }
+.p4-die i { position: absolute; inset: 0; border-radius: 14px; background: #f8fafc; box-shadow: inset 0 0 12px rgba(0, 0, 0, .18); display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: 12px; }
+.p4-die u { width: 14px; height: 14px; border-radius: 50%; background: #111827; place-self: center; }
+.p4-die i[data-n="1"] { transform: translateZ(40px); }
+.p4-die i[data-n="6"] { transform: rotateY(180deg) translateZ(40px); }
+.p4-die i[data-n="2"] { transform: rotateY(90deg) translateZ(40px); }
+.p4-die i[data-n="5"] { transform: rotateY(-90deg) translateZ(40px); }
+.p4-die i[data-n="3"] { transform: rotateX(90deg) translateZ(40px); }
+.p4-die i[data-n="4"] { transform: rotateX(-90deg) translateZ(40px); }
+.p4-dice output { font-weight: 700; min-height: 1.2em; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const dice = $('#p4Dice'), die = $('.p4-die', dice), out = $('output', dice);
+  const PIPS = { 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] };   // cells 1–9 of a 3×3 grid
+  $$('i', die).forEach(f =&gt; { for (let c = 1; c &lt;= 9; c++) f.insertAdjacentHTML('beforeend', PIPS[f.dataset.n].includes(c) ? '&lt;u&gt;&lt;/u&gt;' : '&lt;s&gt;&lt;/s&gt;'); });
+  const FACE = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0, 180] };
+  let spins = 0;
+  $('button', dice).addEventListener('click', () =&gt; {
+    const n = 1 + Math.floor(Math.random() * 6), [x, y] = FACE[n];
+    spins += 2;
+    die.style.transform = `rotateX(${x + spins * 360 - 20}deg) rotateY(${y + spins * 360 + 25}deg)`;
+    out.textContent = '';
+    die.addEventListener('transitionend', () =&gt; (out.textContent = 'You rolled ' + n), { once: true });
+  });
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Micro-interaction</span><span class="badge js">JS</span><span class="count">407 / 408</span></div><h3>Product color swap</h3><p class="desc">Picking a swatch <b>re-colors the product with a smooth cross-fade</b>, gives it a little bounce, and slides in the new color name; the active swatch gets a ring that <b>scales in</b>.</p><p class="desc use"><b>On the web:</b> product pages for clothing, phones, cars, sneakers.</p><div class="demo-box"><div class="stage">
+<div class="p4-swap" id="p4Swap">
+  <div class="p4-swap-item"><i></i></div>
+  <div class="p4-swap-info"><b>T-shirt</b><span>Violet</span>
+    <div class="p4-swap-sw"><button type="button" class="on" style="--c:#7c5cff" data-n="Violet" aria-label="Violet"></button><button type="button" style="--c:#ff5c8a" data-n="Coral" aria-label="Coral"></button><button type="button" style="--c:#22d3ee" data-n="Ice" aria-label="Ice"></button><button type="button" style="--c:#34d399" data-n="Mint" aria-label="Mint"></button></div>
+  </div>
+</div>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class="p4-swap" id="p4Swap"&gt;
+  &lt;div class="p4-swap-item"&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="p4-swap-info"&gt;&lt;b&gt;T-shirt&lt;/b&gt;&lt;span&gt;Violet&lt;/span&gt;
+    &lt;div class="p4-swap-sw"&gt;&lt;button type="button" class="on" style="--c:#7c5cff" data-n="Violet" aria-label="Violet"&gt;&lt;/button&gt;&lt;button type="button" style="--c:#ff5c8a" data-n="Coral" aria-label="Coral"&gt;&lt;/button&gt;&lt;button type="button" style="--c:#22d3ee" data-n="Ice" aria-label="Ice"&gt;&lt;/button&gt;&lt;button type="button" style="--c:#34d399" data-n="Mint" aria-label="Mint"&gt;&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-swap { display: flex; align-items: center; gap: 24px; --c: #7c5cff; }
+.p4-swap-item { width: 130px; height: 140px; display: grid; place-items: center; border-radius: 16px; background: var(--panel); }
+.p4-swap-item i { width: 100px; height: 100px; background: var(--c); transition: background-color .45s;
+  clip-path: polygon(30% 0, 70% 0, 100% 22%, 88% 42%, 80% 36%, 80% 100%, 20% 100%, 20% 36%, 12% 42%, 0 22%); }
+.p4-swap-item i.p4-bounce { animation: p4-pop .45s var(--ease-back); }
+.p4-swap-info { display: grid; gap: 4px; }
+.p4-swap-info b { font-size: 1.1rem; }
+.p4-swap-info span { color: var(--muted); font-size: .85rem; animation: p4-in .3s var(--ease-out); }
+.p4-swap-sw { display: flex; gap: 10px; margin-top: 8px; }
+.p4-swap-sw button { position: relative; width: 26px; height: 26px; border-radius: 50%; border: 0; background: var(--c); }
+.p4-swap-sw button::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid var(--c); transform: scale(.6); opacity: 0; transition: transform .3s var(--ease-back), opacity .2s; }
+.p4-swap-sw button.on::after { transform: none; opacity: 1; }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const sw = $('#p4Swap'), item = $('.p4-swap-item i', sw), name = $('.p4-swap-info span', sw);
+  $$('.p4-swap-sw button', sw).forEach(b =&gt; b.addEventListener('click', () =&gt; {
+    $$('.p4-swap-sw button', sw).forEach(x =&gt; x.classList.toggle('on', x === b));
+    sw.style.setProperty('--c', b.style.getPropertyValue('--c'));
+    restart(item, 'p4-bounce');
+    name.textContent = b.dataset.n; name.style.animation = 'none'; void name.offsetWidth; name.style.animation = '';
+  }));
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Data viz</span><span class="badge js">JS</span><span class="count">408 / 408</span></div><h3>Live price flash</h3><p class="desc">When a price ticks, its cell <b>flashes green or red</b> and shows an arrow, then fades back — so your eye catches what just changed in a table of numbers. Only updates while on screen.</p><p class="desc use"><b>On the web:</b> stock and crypto tickers, sports scores, auctions, live dashboards.</p><div class="demo-box"><div class="stage">
+<table class="p4-tick" id="p4Tick"><tbody></tbody></table>
+</div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden=""><div class="code-block key"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>cell.classList.remove('up', 'down'); void cell.offsetWidth;       // restart the flash
+cell.classList.add(newPrice &gt; oldPrice ? 'up' : 'down');</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;table class="p4-tick" id="p4Tick"&gt;&lt;tbody&gt;&lt;/tbody&gt;&lt;/table&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p4-tick { width: min(300px, 90%); border-collapse: separate; border-spacing: 0 4px; font-size: .88rem; }
+.p4-tick td { padding: 8px 12px; border: 0; background: var(--panel); color: var(--text); }
+.p4-tick td:first-child { border-radius: 8px 0 0 8px; font-weight: 700; }
+.p4-tick td:last-child { border-radius: 0 8px 8px 0; text-align: right; font-family: var(--mono); }
+.p4-tick td.up { animation: p4-flashUp 1s ease-out; }
+.p4-tick td.down { animation: p4-flashDown 1s ease-out; }
+.p4-tick td.up::after { content: " ▲"; color: var(--green); }
+.p4-tick td.down::after { content: " ▼"; color: var(--pink); }
+@keyframes p4-flashUp { from { background: rgba(52, 211, 153, .45); } }
+@keyframes p4-flashDown { from { background: rgba(255, 92, 138, .45); } }</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+  const tbody = $('#p4Tick tbody');
+  const rows = [['ACME', 182.4], ['GLOBX', 54.12], ['INITECH', 9.87], ['UMBRL', 311.05]].map(([sym, p]) =&gt; {
+    const tr = document.createElement('tr'); tr.innerHTML = `&lt;td&gt;${sym}&lt;/td&gt;&lt;td&gt;${p.toFixed(2)}&lt;/td&gt;`; tbody.appendChild(tr);
+    return { cell: tr.lastChild, p };
+  });
+  setInterval(() =&gt; {
+    if (!live(tbody)) return;
+    const r = rows[Math.floor(Math.random() * rows.length)], old = r.p;
+    r.p = Math.max(1, r.p * (1 + (Math.random() - .5) * .03));
+    r.cell.textContent = r.p.toFixed(2);
+    r.cell.classList.remove('up', 'down'); void r.cell.offsetWidth;
+    r.cell.classList.add(r.p &gt;= old ? 'up' : 'down');
+  }, 700);
+}</code></pre></div></div></div></article>
+</div>
+</section>
+</main>
+<footer>Web Motion Playground · Part 4 · built with HTML, CSS and a little JavaScript · demo styles live in <code>part4.css</code>, demo scripts in <code>part4.js</code> · <a href="index.html">Parts 1 &amp; 2</a> · <a href="more.html">Part 3</a></footer>
+<script src="part4.js"></script>
+</body>
+</html>
