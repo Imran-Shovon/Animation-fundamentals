@@ -1,0 +1,53 @@
+/* Part 6: shared simulation presentation; design tokens come from styles.css. */
+.demo-box > .stage.p6-stage {
+  height: 300px;
+}
+.p6-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p6-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p6-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p6-sim.p6-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p6-sim.p6-drag canvas:active {
+  cursor: grabbing;
+}
+.p6-sim canvas:focus-visible, .p6-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p6-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p6-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}

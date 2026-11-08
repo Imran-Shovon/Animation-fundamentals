@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Physics &amp; Procedural Motion — Part 6 · Web Motion Playground</title>
+<meta name="description" content="Seven interactive animation studies: double pendulum, inverse kinematics, flocking, cloth, fluid ink, reaction–diffusion and spring damping. Demos 414–420 with live code."/>
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="part6.css"/>
+</head>
+<body>
+<div class="page-progress" id="pageProgress"></div>
+<header class="hero"><div class="hero-blob b1"></div><div class="hero-blob b2"></div><div class="hero-inner">
+<p class="eyebrow">Part 6 · Interactive reference · Canvas + JavaScript</p>
+<h1><span class="word" style="--i:0">Physics &amp;</span> <span class="word grad-text" style="--i:1">Procedural Motion</span></h1>
+<p class="lead"><strong>7 additional simulations</strong> extend the catalog to 420 demos. Explore chaotic pendulums, joint solving, flocking, cloth, fluid ink, chemical patterns and spring damping. Every study includes its source code and a Replay button.</p>
+<div class="hero-actions"><a class="btn" href="index.html">Parts 1 &amp; 2</a><a class="btn" href="more.html">Part 3</a><a class="btn" href="part4.html">Part 4</a><a class="btn" href="part5.html">Part 5</a><a class="btn primary" href="#simulations">Start browsing ↓</a><button class="btn" id="pauseAll" type="button">⏸ Pause all motion</button></div>
+<p class="motion-note">Your system asks for reduced motion, so animations start paused. Press "Play all motion" to watch them.</p>
+</div></header>
+<nav class="toc" aria-label="Sections"><ul><li><a href="index.html">Parts 1 &amp; 2</a></li><li><a href="more.html">Part 3</a></li><li><a href="part4.html">Part 4</a></li><li><a href="part5.html">Part 5</a></li><li><a href="#simulations">Physics &amp; procedural motion</a></li></ul></nav>
+<main><section class="section" id="simulations"><div class="sec-head reveal"><span class="sec-num">48</span><h2>Physics &amp; procedural motion</h2></div><p class="sec-intro reveal">These examples calculate motion from <strong>equations, local rules or constraints</strong>. Simulations advance only while visible and playing. Replay restores the initial state. The code panels include the shared simulation helpers; they build on the page framework in <code>part6.js</code>. The fluid and chemical grids intentionally use low resolutions so they can run without libraries.</p><div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Simulation</span><span class="badge js">JS</span><span class="count">414 / 420</span></div><h3>Double pendulum</h3><p class="desc">Two connected pendulums exchange energy through <b>coupled, nonlinear motion</b>. The lower mass leaves a short trail. Equal masses and lengths are integrated with small Runge–Kutta steps.</p><p class="desc use"><b>On the web:</b> Physics explainers, chaotic motion studies and generative trails.</p><div class="demo-box"><div class="stage p6-stage" data-js-replay="p6Pendulum"><div class="p6-sim" id="p6Pendulum"><canvas role="img" aria-label="Double pendulum">Your browser needs canvas support for this simulation.</canvas></div>
+<div class="p6-controls"><span>Watch the lower mass trace its path.</span></div></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Two coupled angles and angular velocities evolve together; RK4 limits numerical drift.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p6-sim&quot; id=&quot;p6Pendulum&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Double pendulum&quot;&gt;Your browser needs canvas support for this simulation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p6-controls&quot;&gt;&lt;span&gt;Watch the lower mass trace its path.&lt;/span&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 6: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p6-stage {
+  height: 300px;
+}
+.p6-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p6-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p6-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p6-sim.p6-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p6-sim.p6-drag canvas:active {
+  cursor: grabbing;
+}
+.p6-sim canvas:focus-visible, .p6-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p6-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p6-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared by the seven studies. Coordinates stay in a 400 × 240 drawing space.
+     setupCanvas, addLoop, live, clamp, PALETTE and replayHandlers are page helpers. */
+  const p6Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id);
+    const { cv, ctx } = setupCanvas(host);
+    const point = e =&gt; {
+      const r = cv.getBoundingClientRect();
+      return { x: clamp((e.clientX - r.left) * 400 / r.width, 0, 400), y: clamp((e.clientY - r.top) * 240 / r.height, 0, 240) };
+    };
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240);
+      ctx.lineCap = &#x27;round&#x27;;
+      ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, point, begin, line, dot, label };
+  };
+  const p6Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay;
+    replay(); // A useful static first frame is visible even with reduced motion.
+    addEventListener(&#x27;resize&#x27;, render); // Repaint a resized canvas even while paused.
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now;
+      accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+
+{
+    const s = p6Surface(&#x27;p6Pendulum&#x27;);
+    const length = 52, gravity = 150;
+    let state, trail;
+    const reset = () =&gt; { state = [2.05, 1.6, 0, 0]; trail = []; };
+    // Equal masses and lengths; integrate the coupled equations using RK4.
+    const derivative = ([a, b, u, v]) =&gt; {
+      const d = a - b, denominator = length * (3 - Math.cos(2 * d));
+      return [u, v,
+        (-3 * gravity * Math.sin(a) - gravity * Math.sin(a - 2 * b) - 2 * Math.sin(d) * length * (v * v + u * u * Math.cos(d))) / denominator,
+        2 * Math.sin(d) * (2 * u * u * length + 2 * gravity * Math.cos(a) + v * v * length * Math.cos(d)) / denominator];
+    };
+    const position = () =&gt; {
+      const x = 200 + length * Math.sin(state[0]), y = 110 + length * Math.cos(state[0]);
+      return [x, y, x + length * Math.sin(state[1]), y + length * Math.cos(state[1])];
+    };
+    const step = dt =&gt; {
+      const h = dt / 4;
+      for (let n = 0; n &lt; 4; n++) {
+        const k1 = derivative(state);
+        const k2 = derivative(state.map((v, i) =&gt; v + h * k1[i] / 2));
+        const k3 = derivative(state.map((v, i) =&gt; v + h * k2[i] / 2));
+        const k4 = derivative(state.map((v, i) =&gt; v + h * k3[i]));
+        state = state.map((v, i) =&gt; v + h * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6);
+      }
+      const p = position(); trail.push([p[2], p[3]]); if (trail.length &gt; 280) trail.shift();
+    };
+    const draw = () =&gt; {
+      s.ctx.globalAlpha = .45;
+      for (let i = 1; i &lt; trail.length; i++) s.line(...trail[i - 1], ...trail[i], PALETTE[1], 1);
+      s.ctx.globalAlpha = 1;
+      const [x, y, x2, y2] = position();
+      s.line(200, 110, x, y, PALETTE[2], 3); s.line(x, y, x2, y2, PALETTE[1], 3);
+      s.dot(200, 110, 4, PALETTE[3]); s.dot(x, y, 9, PALETTE[2]); s.dot(x2, y2, 11, PALETTE[1]);
+    };
+    p6Run(s, &#x27;p6Pendulum&#x27;, reset, step, draw);
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Simulation</span><span class="badge js">JS</span><span class="count">415 / 420</span></div><h3>Inverse kinematics: two-link arm</h3><p class="desc">Move the target and the arm solves its shoulder and elbow angles using <b>the law of cosines</b>. Targets beyond its reach are clamped to the reachable ring. It follows an automatic path until you interact.</p><p class="desc use"><b>On the web:</b> Interactive characters, robotics illustrations and pointer-driven rigs.</p><div class="demo-box"><div class="stage p6-stage" data-js-replay="p6Arm"><div class="p6-sim" id="p6Arm"><canvas role="img" aria-label="Inverse kinematics: two-link arm. Use arrow keys to move the target." tabindex="0">Your browser needs canvas support for this simulation.</canvas></div>
+<div class="p6-controls"><span>Move/touch, or focus the canvas and use arrow keys.</span><button class="p6-control" type="button" id="p6ArmAuto">Auto target</button></div></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Clamp the target distance, solve the triangle, then draw each fixed-length segment.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p6-sim&quot; id=&quot;p6Arm&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Inverse kinematics: two-link arm. Use arrow keys to move the target.&quot; tabindex=&quot;0&quot;&gt;Your browser needs canvas support for this simulation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p6-controls&quot;&gt;&lt;span&gt;Move/touch, or focus the canvas and use arrow keys.&lt;/span&gt;&lt;button class=&quot;p6-control&quot; type=&quot;button&quot; id=&quot;p6ArmAuto&quot;&gt;Auto target&lt;/button&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 6: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p6-stage {
+  height: 300px;
+}
+.p6-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p6-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p6-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p6-sim.p6-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p6-sim.p6-drag canvas:active {
+  cursor: grabbing;
+}
+.p6-sim canvas:focus-visible, .p6-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p6-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p6-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared by the seven studies. Coordinates stay in a 400 × 240 drawing space.
+     setupCanvas, addLoop, live, clamp, PALETTE and replayHandlers are page helpers. */
+  const p6Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id);
+    const { cv, ctx } = setupCanvas(host);
+    const point = e =&gt; {
+      const r = cv.getBoundingClientRect();
+      return { x: clamp((e.clientX - r.left) * 400 / r.width, 0, 400), y: clamp((e.clientY - r.top) * 240 / r.height, 0, 240) };
+    };
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240);
+      ctx.lineCap = &#x27;round&#x27;;
+      ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, point, begin, line, dot, label };
+  };
+  const p6Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay;
+    replay(); // A useful static first frame is visible even with reduced motion.
+    addEventListener(&#x27;resize&#x27;, render); // Repaint a resized canvas even while paused.
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now;
+      accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+
+{
+    const s = p6Surface(&#x27;p6Arm&#x27;);
+    let target, current, phase, manual;
+    const reset = () =&gt; { target = { x: 290, y: 100 }; current = { ...target }; phase = 0; manual = false; };
+    const aim = e =&gt; { if (!live(s.host)) return; target = s.point(e); manual = true; };
+    s.cv.addEventListener(&#x27;pointermove&#x27;, aim);
+    s.cv.addEventListener(&#x27;pointerdown&#x27;, aim);
+    s.cv.addEventListener(&#x27;keydown&#x27;, e =&gt; {
+      const arrows = { ArrowLeft: [-12, 0], ArrowRight: [12, 0], ArrowUp: [0, -12], ArrowDown: [0, 12] };
+      if (!arrows[e.key]) return;
+      e.preventDefault(); if (!live(s.host)) return;
+      const [dx, dy] = arrows[e.key]; manual = true;
+      target.x = clamp(target.x + dx, 10, 390); target.y = clamp(target.y + dy, 10, 230);
+    });
+    const step = dt =&gt; {
+      phase += dt;
+      if (!manual) target = { x: 220 + Math.cos(phase * .7) * 95, y: 105 + Math.sin(phase) * 65 };
+      current.x += (target.x - current.x) * .12; current.y += (target.y - current.y) * .12;
+    };
+    const draw = () =&gt; {
+      const bx = 145, by = 200, a = 92, b = 78;
+      const dx = current.x - bx, dy = current.y - by;
+      const distance = clamp(Math.hypot(dx, dy), Math.abs(a - b) + .01, a + b - .01);
+      const direction = Math.atan2(dy, dx);
+      const shoulder = direction - Math.acos(clamp((a * a + distance * distance - b * b) / (2 * a * distance), -1, 1));
+      const elbow = { x: bx + a * Math.cos(shoulder), y: by + a * Math.sin(shoulder) };
+      const end = { x: bx + distance * Math.cos(direction), y: by + distance * Math.sin(direction) };
+      s.line(110, 210, 180, 210, PALETTE[0], 8);
+      s.line(bx, by, elbow.x, elbow.y, PALETTE[0], 12);
+      s.line(elbow.x, elbow.y, end.x, end.y, PALETTE[2], 9);
+      s.dot(bx, by, 8, PALETTE[3]); s.dot(elbow.x, elbow.y, 7, PALETTE[3]); s.dot(end.x, end.y, 6, PALETTE[1]);
+      s.line(target.x - 6, target.y, target.x + 6, target.y, PALETTE[1]);
+      s.line(target.x, target.y - 6, target.x, target.y + 6, PALETTE[1]);
+    };
+    const replay = p6Run(s, &#x27;p6Arm&#x27;, reset, step, draw);
+    $(&#x27;#p6ArmAuto&#x27;).addEventListener(&#x27;click&#x27;, replay);
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Simulation</span><span class="badge js">JS</span><span class="count">416 / 420</span></div><h3>Flocking: separation, alignment & cohesion</h3><p class="desc">Each bird steers using only its neighbors. <b>Separation avoids crowding, alignment matches headings, and cohesion gathers the flock</b>. The edges wrap; the pointer acts as a local obstacle.</p><p class="desc use"><b>On the web:</b> Living backgrounds, swarm illustrations and autonomous-agent demos.</p><div class="demo-box"><div class="stage p6-stage" data-js-replay="p6Flock"><div class="p6-sim" id="p6Flock"><canvas role="img" aria-label="Flocking: separation, alignment &amp; cohesion">Your browser needs canvas support for this simulation.</canvas></div>
+<div class="p6-controls"><span>Move the pointer to scatter nearby birds.</span><button class="p6-control" type="button" id="p6FlockReset">Regroup</button></div></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Compute all steering forces from the same frame before updating any bird.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p6-sim&quot; id=&quot;p6Flock&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Flocking: separation, alignment &amp;amp; cohesion&quot;&gt;Your browser needs canvas support for this simulation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p6-controls&quot;&gt;&lt;span&gt;Move the pointer to scatter nearby birds.&lt;/span&gt;&lt;button class=&quot;p6-control&quot; type=&quot;button&quot; id=&quot;p6FlockReset&quot;&gt;Regroup&lt;/button&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 6: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p6-stage {
+  height: 300px;
+}
+.p6-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p6-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p6-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p6-sim.p6-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p6-sim.p6-drag canvas:active {
+  cursor: grabbing;
+}
+.p6-sim canvas:focus-visible, .p6-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p6-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p6-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared by the seven studies. Coordinates stay in a 400 × 240 drawing space.
+     setupCanvas, addLoop, live, clamp, PALETTE and replayHandlers are page helpers. */
+  const p6Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id);
+    const { cv, ctx } = setupCanvas(host);
+    const point = e =&gt; {
+      const r = cv.getBoundingClientRect();
+      return { x: clamp((e.clientX - r.left) * 400 / r.width, 0, 400), y: clamp((e.clientY - r.top) * 240 / r.height, 0, 240) };
+    };
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240);
+      ctx.lineCap = &#x27;round&#x27;;
+      ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, point, begin, line, dot, label };
+  };
+  const p6Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay;
+    replay(); // A useful static first frame is visible even with reduced motion.
+    addEventListener(&#x27;resize&#x27;, render); // Repaint a resized canvas even while paused.
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now;
+      accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+
+{
+    const s = p6Surface(&#x27;p6Flock&#x27;);
+    let birds, pointer;
+    const reset = () =&gt; {
+      pointer = null;
+      birds = Array.from({ length: 48 }, (_, i) =&gt; ({ x: 200 + Math.cos(i * 2.4) * (20 + i * 2), y: 120 + Math.sin(i * 2.4) * (15 + i), vx: Math.cos(i) * 55, vy: Math.sin(i) * 55 }));
+    };
+    s.cv.addEventListener(&#x27;pointermove&#x27;, e =&gt; { if (live(s.host)) pointer = s.point(e); });
+    s.cv.addEventListener(&#x27;pointerleave&#x27;, () =&gt; { pointer = null; });
+    const step = dt =&gt; {
+      const forces = birds.map(bird =&gt; {
+        let sx = 0, sy = 0, ax = 0, ay = 0, cx = 0, cy = 0, count = 0;
+        for (const other of birds) {
+          const dx = bird.x - other.x, dy = bird.y - other.y, d2 = dx * dx + dy * dy;
+          if (other === bird || d2 &gt; 65 * 65) continue;
+          count++; ax += other.vx; ay += other.vy; cx += other.x; cy += other.y;
+          if (d2 &lt; 24 * 24) { sx += dx / Math.max(d2, 1); sy += dy / Math.max(d2, 1); }
+        }
+        const steer = (x, y) =&gt; { const n = Math.hypot(x, y); return n &gt; .001 ? [x / n * 65 - bird.vx, y / n * 65 - bird.vy] : [0, 0]; };
+        const separation = steer(sx, sy);
+        const cohesion = count ? steer(cx / count - bird.x, cy / count - bird.y) : [0, 0];
+        let fx = separation[0] * 1.7 + cohesion[0] * .65 + (count ? (ax / count - bird.vx) * .8 : 0);
+        let fy = separation[1] * 1.7 + cohesion[1] * .65 + (count ? (ay / count - bird.vy) * .8 : 0);
+        if (pointer) {
+          const dx = bird.x - pointer.x, dy = bird.y - pointer.y, d = Math.hypot(dx, dy);
+          if (d &lt; 85 &amp;&amp; d &gt; .01) { fx += dx / d * 160; fy += dy / d * 160; }
+        }
+        const limit = Math.max(1, Math.hypot(fx, fy) / 120);
+        return [fx / limit, fy / limit];
+      });
+      birds.forEach((bird, i) =&gt; {
+        bird.vx += forces[i][0] * dt; bird.vy += forces[i][1] * dt;
+        const speed = Math.hypot(bird.vx, bird.vy), scale = speed &gt; .001 ? clamp(speed, 35, 85) / speed : 1;
+        bird.vx *= scale; bird.vy *= scale;
+        bird.x = (bird.x + bird.vx * dt + 400) % 400; bird.y = (bird.y + bird.vy * dt + 240) % 240;
+      });
+    };
+    const draw = () =&gt; birds.forEach((bird, i) =&gt; {
+      s.ctx.save(); s.ctx.translate(bird.x, bird.y); s.ctx.rotate(Math.atan2(bird.vy, bird.vx));
+      s.ctx.fillStyle = PALETTE[i % 3]; s.ctx.beginPath(); s.ctx.moveTo(7, 0); s.ctx.lineTo(-5, -3); s.ctx.lineTo(-3, 0); s.ctx.lineTo(-5, 3); s.ctx.closePath(); s.ctx.fill(); s.ctx.restore();
+    });
+    const replay = p6Run(s, &#x27;p6Flock&#x27;, reset, step, draw);
+    $(&#x27;#p6FlockReset&#x27;).addEventListener(&#x27;click&#x27;, replay);
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Simulation</span><span class="badge js">JS</span><span class="count">417 / 420</span></div><h3>Draggable cloth simulation</h3><p class="desc">A mesh hangs from pinned points. <b>Verlet integration supplies momentum and repeated distance constraints keep neighboring points together</b>. Grab the fabric and pull, or send a gust through it.</p><p class="desc use"><b>On the web:</b> Fabric previews, physics toys and interactive product illustrations.</p><div class="demo-box"><div class="stage p6-stage" data-js-replay="p6Cloth"><div class="p6-sim p6-drag" id="p6Cloth"><canvas role="img" aria-label="Draggable cloth simulation">Your browser needs canvas support for this simulation.</canvas></div>
+<div class="p6-controls"><span>Drag the mesh, or use the Gust button.</span><button class="p6-control" type="button" id="p6ClothGust">Gust</button></div></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Integrate positions, preserve pinned points, then repeatedly relax the mesh constraints.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p6-sim p6-drag&quot; id=&quot;p6Cloth&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Draggable cloth simulation&quot;&gt;Your browser needs canvas support for this simulation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p6-controls&quot;&gt;&lt;span&gt;Drag the mesh, or use the Gust button.&lt;/span&gt;&lt;button class=&quot;p6-control&quot; type=&quot;button&quot; id=&quot;p6ClothGust&quot;&gt;Gust&lt;/button&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 6: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p6-stage {
+  height: 300px;
+}
+.p6-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p6-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p6-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p6-sim.p6-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p6-sim.p6-drag canvas:active {
+  cursor: grabbing;
+}
+.p6-sim canvas:focus-visible, .p6-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p6-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p6-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared by the seven studies. Coordinates stay in a 400 × 240 drawing space.
+     setupCanvas, addLoop, live, clamp, PALETTE and replayHandlers are page helpers. */
+  const p6Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id);
+    const { cv, ctx } = setupCanvas(host);
+    const point = e =&gt; {
+      const r = cv.getBoundingClientRect();
+      return { x: clamp((e.clientX - r.left) * 400 / r.width, 0, 400), y: clamp((e.clientY - r.top) * 240 / r.height, 0, 240) };
+    };
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240);
+      ctx.lineCap = &#x27;round&#x27;;
+      ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, point, begin, line, dot, label };
+  };
+  const p6Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay;
+    replay(); // A useful static first frame is visible even with reduced motion.
+    addEventListener(&#x27;resize&#x27;, render); // Repaint a resized canvas even while paused.
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now;
+      accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+
+{
+    const s = p6Surface(&#x27;p6Cloth&#x27;);
+    const columns = 23, rows = 13, spacing = 12;
+    let points, links, grabbed, pointer, phase, gust;
+    const reset = () =&gt; {
+      phase = 0; gust = 0; grabbed = null; pointer = null; points = []; links = [];
+      for (let y = 0; y &lt; rows; y++) for (let x = 0; x &lt; columns; x++) {
+        const px = 68 + x * spacing, py = 24 + y * spacing;
+        points.push({ x: px, y: py, oldX: px, oldY: py, pinned: y === 0 &amp;&amp; x % 2 === 0 });
+        const index = y * columns + x;
+        if (x) links.push([index - 1, index]);
+        if (y) links.push([index - columns, index]);
+      }
+    };
+    s.cv.addEventListener(&#x27;pointerdown&#x27;, e =&gt; {
+      if (!live(s.host)) return;
+      const aim = s.point(e);
+      const nearest = points.filter(p =&gt; !p.pinned).sort((a, b) =&gt; Math.hypot(a.x - aim.x, a.y - aim.y) - Math.hypot(b.x - aim.x, b.y - aim.y))[0];
+      if (Math.hypot(nearest.x - aim.x, nearest.y - aim.y) &gt; 32) return;
+      grabbed = nearest; pointer = aim; s.cv.setPointerCapture(e.pointerId);
+    });
+    s.cv.addEventListener(&#x27;pointermove&#x27;, e =&gt; { if (grabbed &amp;&amp; live(s.host)) pointer = s.point(e); });
+    const release = () =&gt; { grabbed = null; pointer = null; };
+    [&#x27;pointerup&#x27;, &#x27;pointercancel&#x27;, &#x27;lostpointercapture&#x27;].forEach(type =&gt; s.cv.addEventListener(type, release));
+    $(&#x27;#p6ClothGust&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { if (live(s.host)) gust = 1.1; });
+    const step = dt =&gt; {
+      phase += dt; gust *= .97;
+      for (const p of points) {
+        if (p.pinned || p === grabbed) continue;
+        const vx = (p.x - p.oldX) * .99, vy = (p.y - p.oldY) * .99;
+        p.oldX = p.x; p.oldY = p.y;
+        p.x += vx + Math.sin(phase * 2 + p.y / 60) * .025 + gust * .32;
+        p.y += vy + .14;
+      }
+      for (let iteration = 0; iteration &lt; 6; iteration++) {
+        if (grabbed &amp;&amp; pointer) { grabbed.x = pointer.x; grabbed.y = pointer.y; grabbed.oldX = pointer.x; grabbed.oldY = pointer.y; }
+        for (const [i, j] of links) {
+          const a = points[i], b = points[j], dx = b.x - a.x, dy = b.y - a.y, distance = Math.hypot(dx, dy) || .001;
+          const fixedA = a.pinned || a === grabbed, fixedB = b.pinned || b === grabbed;
+          const weight = (!fixedA ? 1 : 0) + (!fixedB ? 1 : 0);
+          if (!weight) continue;
+          const correction = (distance - spacing) / distance / weight;
+          if (!fixedA) { a.x += dx * correction; a.y += dy * correction; }
+          if (!fixedB) { b.x -= dx * correction; b.y -= dy * correction; }
+        }
+      }
+      for (const p of points) if (!p.pinned) { p.x = clamp(p.x, 5, 395); p.y = clamp(p.y, 5, 233); }
+    };
+    const draw = () =&gt; {
+      for (const [i, j] of links) s.line(points[i].x, points[i].y, points[j].x, points[j].y, i % columns &lt; 11 ? PALETTE[0] : PALETTE[2], 1);
+      for (const p of points) if (p.pinned) s.dot(p.x, p.y, 3, PALETTE[3]);
+    };
+    p6Run(s, &#x27;p6Cloth&#x27;, reset, step, draw);
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Simulation</span><span class="badge js">JS</span><span class="count">418 / 420</span></div><h3>Fluid ink: advection & pressure</h3><p class="desc">Ink rises through a small 2D velocity grid. <b>Semi-Lagrangian advection transports momentum and dye; pressure projection reduces divergence</b>. This low-resolution educational solver favors speed over physical accuracy.</p><p class="desc use"><b>On the web:</b> Interactive ink, smoke-like backgrounds and fluid-motion explainers.</p><div class="demo-box"><div class="stage p6-stage" data-js-replay="p6Fluid"><div class="p6-sim" id="p6Fluid"><canvas role="img" aria-label="Fluid ink: advection &amp; pressure">Your browser needs canvas support for this simulation.</canvas></div>
+<div class="p6-controls"><span>Move/touch to stir, or add an ink pulse.</span><button class="p6-control" type="button" id="p6FluidInk">Ink pulse</button></div></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Inject velocity and dye, advect velocity, solve pressure, then advect the dye.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p6-sim&quot; id=&quot;p6Fluid&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Fluid ink: advection &amp;amp; pressure&quot;&gt;Your browser needs canvas support for this simulation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p6-controls&quot;&gt;&lt;span&gt;Move/touch to stir, or add an ink pulse.&lt;/span&gt;&lt;button class=&quot;p6-control&quot; type=&quot;button&quot; id=&quot;p6FluidInk&quot;&gt;Ink pulse&lt;/button&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 6: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p6-stage {
+  height: 300px;
+}
+.p6-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p6-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p6-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p6-sim.p6-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p6-sim.p6-drag canvas:active {
+  cursor: grabbing;
+}
+.p6-sim canvas:focus-visible, .p6-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p6-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p6-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared by the seven studies. Coordinates stay in a 400 × 240 drawing space.
+     setupCanvas, addLoop, live, clamp, PALETTE and replayHandlers are page helpers. */
+  const p6Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id);
+    const { cv, ctx } = setupCanvas(host);
+    const point = e =&gt; {
+      const r = cv.getBoundingClientRect();
+      return { x: clamp((e.clientX - r.left) * 400 / r.width, 0, 400), y: clamp((e.clientY - r.top) * 240 / r.height, 0, 240) };
+    };
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240);
+      ctx.lineCap = &#x27;round&#x27;;
+      ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, point, begin, line, dot, label };
+  };
+  const p6Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay;
+    replay(); // A useful static first frame is visible even with reduced motion.
+    addEventListener(&#x27;resize&#x27;, render); // Repaint a resized canvas even while paused.
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now;
+      accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+
+{
+    const s = p6Surface(&#x27;p6Fluid&#x27;);
+    const width = 64, height = 40, count = width * height;
+    const buffer = document.createElement(&#x27;canvas&#x27;); buffer.width = width; buffer.height = height;
+    const pixels = buffer.getContext(&#x27;2d&#x27;), image = pixels.createImageData(width, height);
+    let u, v, dye, pressure, divergence, phase, pointer, lastPointer;
+    const index = (x, y) =&gt; y * width + x;
+    const reset = () =&gt; {
+      u = new Float32Array(count); v = new Float32Array(count); dye = new Float32Array(count);
+      pressure = new Float32Array(count); divergence = new Float32Array(count); phase = 0; pointer = null; lastPointer = null;
+      for (let y = 28; y &lt; 36; y++) for (let x = 28; x &lt; 36; x++) dye[index(x, y)] = 1;
+    };
+    const inject = (x, y, fx, fy) =&gt; {
+      for (let j = -2; j &lt;= 2; j++) for (let i = -2; i &lt;= 2; i++) {
+        const px = Math.round(x) + i, py = Math.round(y) + j;
+        if (px &lt; 1 || px &gt;= width - 1 || py &lt; 1 || py &gt;= height - 1) continue;
+        const k = index(px, py), weight = Math.exp(-(i * i + j * j) / 4);
+        u[k] = clamp(u[k] + fx * weight, -8, 8); v[k] = clamp(v[k] + fy * weight, -8, 8); dye[k] = Math.min(1, dye[k] + .35 * weight);
+      }
+    };
+    s.cv.addEventListener(&#x27;pointermove&#x27;, e =&gt; {
+      if (!live(s.host)) return;
+      pointer = s.point(e);
+      const dx = lastPointer ? (pointer.x - lastPointer.x) * .08 : 0, dy = lastPointer ? (pointer.y - lastPointer.y) * .08 : -1;
+      inject(pointer.x / 400 * width, pointer.y / 240 * height, dx, dy); lastPointer = pointer;
+    });
+    s.cv.addEventListener(&#x27;pointerleave&#x27;, () =&gt; { pointer = null; lastPointer = null; });
+    $(&#x27;#p6FluidInk&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { if (live(s.host)) inject(width / 2, height / 2, 2.5, -3); });
+    const sample = (field, x, y) =&gt; {
+      x = clamp(x, .5, width - 1.5); y = clamp(y, .5, height - 1.5);
+      const ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy;
+      return (field[index(ix, iy)] * (1 - fx) + field[index(ix + 1, iy)] * fx) * (1 - fy) + (field[index(ix, iy + 1)] * (1 - fx) + field[index(ix + 1, iy + 1)] * fx) * fy;
+    };
+    const advect = (field, vx, vy, decay) =&gt; {
+      const result = new Float32Array(count);
+      for (let y = 1; y &lt; height - 1; y++) for (let x = 1; x &lt; width - 1; x++) {
+        const k = index(x, y); result[k] = sample(field, x - vx[k], y - vy[k]) * decay;
+      }
+      return result;
+    };
+    const step = dt =&gt; {
+      phase += dt;
+      inject(width / 2 + Math.sin(phase * 1.2) * 8, height - 6, Math.sin(phase * 1.7) * .2, -.38);
+      // Semi-Lagrangian transport, followed by a pressure projection.
+      const nextU = advect(u, u, v, .992), nextV = advect(v, u, v, .992); u = nextU; v = nextV;
+      pressure.fill(0);
+      for (let y = 1; y &lt; height - 1; y++) for (let x = 1; x &lt; width - 1; x++) {
+        const k = index(x, y); divergence[k] = -.5 * (u[k + 1] - u[k - 1] + v[k + width] - v[k - width]);
+      }
+      for (let iteration = 0; iteration &lt; 18; iteration++) {
+        for (let y = 1; y &lt; height - 1; y++) for (let x = 1; x &lt; width - 1; x++) {
+          const k = index(x, y); pressure[k] = (divergence[k] + pressure[k - 1] + pressure[k + 1] + pressure[k - width] + pressure[k + width]) / 4;
+        }
+      }
+      for (let y = 1; y &lt; height - 1; y++) for (let x = 1; x &lt; width - 1; x++) {
+        const k = index(x, y); u[k] -= .5 * (pressure[k + 1] - pressure[k - 1]); v[k] -= .5 * (pressure[k + width] - pressure[k - width]);
+      }
+      dye = advect(dye, u, v, .995);
+    };
+    const draw = () =&gt; {
+      for (let k = 0; k &lt; count; k++) {
+        const d = clamp(dye[k] * 1.8, 0, 1), offset = k * 4;
+        image.data[offset] = 34 + 90 * d; image.data[offset + 1] = 211 - 119 * d; image.data[offset + 2] = 238 + 17 * d; image.data[offset + 3] = d * 255;
+      }
+      pixels.putImageData(image, 0, 0); s.ctx.imageSmoothingEnabled = true; s.ctx.drawImage(buffer, 0, 0, 400, 240);
+    };
+    p6Run(s, &#x27;p6Fluid&#x27;, reset, step, draw);
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Simulation</span><span class="badge js">JS</span><span class="count">419 / 420</span></div><h3>Reaction–diffusion: growing organic patterns</h3><p class="desc">Two virtual chemicals diffuse and react at different rates. <b>The Gray–Scott model grows spots and labyrinth-like boundaries</b> from small seeds. Let it evolve for a few seconds, then add another seed.</p><p class="desc use"><b>On the web:</b> Generative textures, organic reveals and science visualizations.</p><div class="demo-box"><div class="stage p6-stage" data-js-replay="p6Reaction"><div class="p6-sim" id="p6Reaction"><canvas role="img" aria-label="Reaction–diffusion: growing organic patterns">Your browser needs canvas support for this simulation.</canvas></div>
+<div class="p6-controls"><span>Tap the canvas or add a seed with the button.</span><button class="p6-control" type="button" id="p6ReactionSeed">Add seed</button></div></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>A + 2B → 3B; combine a weighted Laplacian with feed and kill terms on a wrapping grid.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p6-sim&quot; id=&quot;p6Reaction&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Reaction–diffusion: growing organic patterns&quot;&gt;Your browser needs canvas support for this simulation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p6-controls&quot;&gt;&lt;span&gt;Tap the canvas or add a seed with the button.&lt;/span&gt;&lt;button class=&quot;p6-control&quot; type=&quot;button&quot; id=&quot;p6ReactionSeed&quot;&gt;Add seed&lt;/button&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 6: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p6-stage {
+  height: 300px;
+}
+.p6-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p6-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p6-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p6-sim.p6-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p6-sim.p6-drag canvas:active {
+  cursor: grabbing;
+}
+.p6-sim canvas:focus-visible, .p6-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p6-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p6-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared by the seven studies. Coordinates stay in a 400 × 240 drawing space.
+     setupCanvas, addLoop, live, clamp, PALETTE and replayHandlers are page helpers. */
+  const p6Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id);
+    const { cv, ctx } = setupCanvas(host);
+    const point = e =&gt; {
+      const r = cv.getBoundingClientRect();
+      return { x: clamp((e.clientX - r.left) * 400 / r.width, 0, 400), y: clamp((e.clientY - r.top) * 240 / r.height, 0, 240) };
+    };
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240);
+      ctx.lineCap = &#x27;round&#x27;;
+      ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, point, begin, line, dot, label };
+  };
+  const p6Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay;
+    replay(); // A useful static first frame is visible even with reduced motion.
+    addEventListener(&#x27;resize&#x27;, render); // Repaint a resized canvas even while paused.
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now;
+      accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+
+{
+    const s = p6Surface(&#x27;p6Reaction&#x27;);
+    const width = 96, height = 60, count = width * height;
+    const buffer = document.createElement(&#x27;canvas&#x27;); buffer.width = width; buffer.height = height;
+    const pixels = buffer.getContext(&#x27;2d&#x27;), image = pixels.createImageData(width, height);
+    let a, b, nextA, nextB;
+    const seed = (cx, cy) =&gt; {
+      for (let y = -3; y &lt;= 3; y++) for (let x = -3; x &lt;= 3; x++) {
+        const px = (Math.round(cx) + x + width) % width, py = (Math.round(cy) + y + height) % height;
+        const k = py * width + px; a[k] = .5; b[k] = .9;
+      }
+    };
+    const reset = () =&gt; {
+      a = new Float32Array(count).fill(1); b = new Float32Array(count);
+      nextA = new Float32Array(count); nextB = new Float32Array(count);
+      seed(width / 2, height / 2); seed(width / 3, height / 3); seed(width * .7, height * .65);
+    };
+    s.cv.addEventListener(&#x27;pointerdown&#x27;, e =&gt; {
+      if (!live(s.host)) return;
+      const p = s.point(e); seed(p.x / 400 * width, p.y / 240 * height);
+    });
+    $(&#x27;#p6ReactionSeed&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { if (live(s.host)) seed(width * .65, height * .3); });
+    const laplacian = (field, x, y) =&gt; {
+      const left = (x + width - 1) % width, right = (x + 1) % width;
+      const up = (y + height - 1) % height, down = (y + 1) % height;
+      return -field[y * width + x] + .2 * (field[y * width + left] + field[y * width + right] + field[up * width + x] + field[down * width + x]) + .05 * (field[up * width + left] + field[up * width + right] + field[down * width + left] + field[down * width + right]);
+    };
+    const step = () =&gt; {
+      // Gray–Scott: A diffuses faster than B, while A + 2B produces more B.
+      for (let iteration = 0; iteration &lt; 8; iteration++) {
+        for (let y = 0; y &lt; height; y++) for (let x = 0; x &lt; width; x++) {
+          const k = y * width + x, reaction = a[k] * b[k] * b[k];
+          nextA[k] = clamp(a[k] + laplacian(a, x, y) - reaction + .055 * (1 - a[k]), 0, 1);
+          nextB[k] = clamp(b[k] + .5 * laplacian(b, x, y) + reaction - (.055 + .062) * b[k], 0, 1);
+        }
+        [a, nextA] = [nextA, a]; [b, nextB] = [nextB, b];
+      }
+    };
+    const draw = () =&gt; {
+      for (let k = 0; k &lt; count; k++) {
+        const value = clamp(b[k] * 2.5, 0, 1), offset = k * 4;
+        image.data[offset] = 124 + (34 - 124) * value; image.data[offset + 1] = 92 + (211 - 92) * value; image.data[offset + 2] = 255 + (238 - 255) * value; image.data[offset + 3] = 70 + 185 * value;
+      }
+      pixels.putImageData(image, 0, 0); s.ctx.imageSmoothingEnabled = true; s.ctx.drawImage(buffer, 0, 0, 400, 240);
+    };
+    p6Run(s, &#x27;p6Reaction&#x27;, reset, step, draw);
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Simulation</span><span class="badge js">JS</span><span class="count">420 / 420</span></div><h3>Spring damping comparison</h3><p class="desc">Three identical springs share the same starting position and target. <b>Underdamping overshoots; critical damping returns fastest without overshoot; overdamping approaches slowly</b>. The responses use closed-form solutions, so frame rate does not change the curves.</p><p class="desc use"><b>On the web:</b> Choosing interface spring settings and teaching motion response.</p><div class="demo-box"><div class="stage p6-stage" data-js-replay="p6Springs"><div class="p6-sim" id="p6Springs"><canvas role="img" aria-label="Spring damping comparison">Your browser needs canvas support for this simulation.</canvas></div>
+<div class="p6-controls"><span>The amber line marks the shared target.</span><button class="p6-control" type="button" id="p6SpringsRelease">Release again</button></div></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Compare damping ratios ζ &lt; 1, ζ = 1 and ζ &gt; 1 with the same natural frequency.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p6-sim&quot; id=&quot;p6Springs&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Spring damping comparison&quot;&gt;Your browser needs canvas support for this simulation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p6-controls&quot;&gt;&lt;span&gt;The amber line marks the shared target.&lt;/span&gt;&lt;button class=&quot;p6-control&quot; type=&quot;button&quot; id=&quot;p6SpringsRelease&quot;&gt;Release again&lt;/button&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 6: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p6-stage {
+  height: 300px;
+}
+.p6-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p6-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p6-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p6-sim.p6-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p6-sim.p6-drag canvas:active {
+  cursor: grabbing;
+}
+.p6-sim canvas:focus-visible, .p6-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p6-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p6-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared by the seven studies. Coordinates stay in a 400 × 240 drawing space.
+     setupCanvas, addLoop, live, clamp, PALETTE and replayHandlers are page helpers. */
+  const p6Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id);
+    const { cv, ctx } = setupCanvas(host);
+    const point = e =&gt; {
+      const r = cv.getBoundingClientRect();
+      return { x: clamp((e.clientX - r.left) * 400 / r.width, 0, 400), y: clamp((e.clientY - r.top) * 240 / r.height, 0, 240) };
+    };
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240);
+      ctx.lineCap = &#x27;round&#x27;;
+      ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, point, begin, line, dot, label };
+  };
+  const p6Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay;
+    replay(); // A useful static first frame is visible even with reduced motion.
+    addEventListener(&#x27;resize&#x27;, render); // Repaint a resized canvas even while paused.
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now;
+      accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+
+{
+    const s = p6Surface(&#x27;p6Springs&#x27;);
+    const damping = [.22, 1, 1.8], names = [&#x27;Underdamped&#x27;, &#x27;Critical&#x27;, &#x27;Overdamped&#x27;];
+    let time;
+    const reset = () =&gt; { time = 0; };
+    const response = (t, zeta) =&gt; {
+      const omega = 4;
+      if (zeta &lt; 1) {
+        const wd = omega * Math.sqrt(1 - zeta * zeta);
+        return 1 - Math.exp(-zeta * omega * t) * (Math.cos(wd * t) + zeta * omega / wd * Math.sin(wd * t));
+      }
+      if (zeta === 1) return 1 - Math.exp(-omega * t) * (1 + omega * t);
+      const q = Math.sqrt(zeta * zeta - 1), r1 = -omega * (zeta - q), r2 = -omega * (zeta + q);
+      return 1 + (r2 * Math.exp(r1 * t) - r1 * Math.exp(r2 * t)) / (r1 - r2);
+    };
+    const step = dt =&gt; { time = Math.min(time + dt, 7); };
+    const draw = () =&gt; {
+      s.ctx.globalAlpha = .35; s.line(270, 12, 270, 230, PALETTE[3], 1); s.ctx.globalAlpha = 1;
+      damping.forEach((zeta, i) =&gt; {
+        const y = 49 + i * 76, x = 65 + response(time, zeta) * 205;
+        s.label(names[i] + &#x27; (ζ=&#x27; + zeta + &#x27;)&#x27;, 12, y - 23, PALETTE[i]);
+        let previous = [25, y];
+        for (let n = 1; n &lt;= 16; n++) {
+          const point = [25 + (x - 38) * n / 16, y + (n === 16 ? 0 : (n % 2 ? 7 : -7))];
+          s.line(...previous, ...point, PALETTE[i], 1.5); previous = point;
+        }
+        s.dot(x, y, 11, PALETTE[i]);
+      });
+    };
+    const replay = p6Run(s, &#x27;p6Springs&#x27;, reset, step, draw);
+    $(&#x27;#p6SpringsRelease&#x27;).addEventListener(&#x27;click&#x27;, replay);
+  }</code></pre></div></div></div></article>
+</div></section></main>
+<footer>Web Motion Playground · Part 6 · <code>part6.css</code> + <code>part6.js</code> · <a href="index.html">Parts 1 &amp; 2</a> · <a href="more.html">Part 3</a> · <a href="part4.html">Part 4</a> · <a href="part5.html">Part 5</a></footer>
+<script src="part6.js"></script>
+</body></html>

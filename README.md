@@ -8,7 +8,8 @@ A dependency-free HTML, CSS and JavaScript animation reference. Open `index.html
 | `more.html` | 227–364 | Additional UI, navigation and decorative patterns |
 | `part4.html` | 365–408 | Modern CSS, forms, gestures, data and games |
 | `part5.html` | 409–413 | Walking gait, moiré, standing wave, cycloid and Lissajous studies |
+| `part6.html` | 414–420 | Double pendulum, inverse kinematics, flocking, cloth, fluid ink, reaction–diffusion and spring damping |
 
 Each page has Show code, Copy, Replay and Pause all motion controls. Reduced-motion preferences start playback paused; off-screen demos pause automatically. Styles and scripts for each additional part use the matching filename alongside shared `styles.css`.
 
-Project conventions are in `.claude/skills/animation-playground/SKILL.md`. The catalog contains 413 demos, not an exhaustive list of every possible animation.
+Project conventions are in `.claude/skills/animation-playground/SKILL.md`. The catalog contains 420 demos, not an exhaustive list of every possible animation.
