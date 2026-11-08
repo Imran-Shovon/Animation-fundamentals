@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Algorithms, Rigs &amp; Shaders — Part 7 · Web Motion Playground</title>
+<meta name="description" content="Six additional animation studies: sorting, pathfinding, maze generation, rigid bodies, skeletal skinning and WebGL vertex displacement. Demos 421–426 with live code."/>
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="part7.css"/>
+</head>
+<body>
+<div class="page-progress" id="pageProgress"></div>
+<header class="hero"><div class="hero-blob b1"></div><div class="hero-blob b2"></div><div class="hero-inner">
+<p class="eyebrow">Part 7 · Interactive reference · Canvas + WebGL</p>
+<h1><span class="word" style="--i:0">Algorithms, Rigs</span> <span class="word grad-text" style="--i:1">&amp; Shaders</span></h1>
+<p class="lead"><strong>6 additional studies</strong> bring the catalog to 426 demos. Watch algorithms unfold, explore rotating rigid bodies, bend a skinned mesh, and displace vertices on the GPU. Every demo has source panels, pause support and replay controls.</p>
+<div class="hero-actions"><a class="btn" href="index.html">Parts 1 &amp; 2</a><a class="btn" href="more.html">Part 3</a><a class="btn" href="part4.html">Part 4</a><a class="btn" href="part5.html">Part 5</a><a class="btn" href="part6.html">Part 6</a><a class="btn primary" href="#advanced-motion">Start browsing ↓</a><button class="btn" id="pauseAll" type="button">⏸ Pause all motion</button></div>
+<p class="motion-note">Your system asks for reduced motion, so animations start paused. Press "Play all motion" to watch them.</p>
+</div></header>
+<nav class="toc" aria-label="Sections"><ul><li><a href="index.html">Parts 1 &amp; 2</a></li><li><a href="more.html">Part 3</a></li><li><a href="part4.html">Part 4</a></li><li><a href="part5.html">Part 5</a></li><li><a href="part6.html">Part 6</a></li><li><a href="#advanced-motion">Algorithms, rigs &amp; shaders</a></li></ul></nav>
+<main><section class="section" id="advanced-motion"><div class="sec-head reveal"><span class="sec-num">49</span><h2>Algorithms, rigs &amp; shaders</h2></div><p class="sec-intro reveal">These six studies add <strong>algorithm playback, polygon contacts, vertex skinning and GPU deformation</strong>. Finite algorithms stop when complete; press Replay or change the controls to run them again. Simulations advance only while visible and playing. Source panels include their drawing helpers and build on the page framework in <code>part7.js</code>.</p><div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Advanced motion</span><span class="badge js">JS</span><span class="count">421 / 426</span></div><h3>Sorting algorithm visualization</h3><p class="desc">Compare <b>bubble sort, merge sort and quicksort</b> on identical input. Amber marks the current operation, and green marks completion. Algorithm steps are recorded first, then played at a readable pace.</p><p class="desc use"><b>On the web:</b> Algorithm lessons, data-processing explainers and educational tools.</p><div class="demo-box"><div class="stage p7-stage" data-js-replay="p7Sort"><div class="p7-sim" id="p7Sort"><canvas role="img" aria-label="Sorting algorithm visualization">Your browser needs canvas support for this animation.</canvas></div>
+<div class="p7-controls"><label>Algorithm <select class="p7-select" id="p7SortMode"><option value="bubble">Bubble sort</option><option value="merge">Merge sort</option><option value="quick">Quicksort</option></select></label></div>
+<p class="p7-status" id="p7SortStatus"></p></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Record comparisons and writes, then animate immutable snapshots of the array.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p7-sim&quot; id=&quot;p7Sort&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Sorting algorithm visualization&quot;&gt;Your browser needs canvas support for this animation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p7-controls&quot;&gt;&lt;label&gt;Algorithm &lt;select class=&quot;p7-select&quot; id=&quot;p7SortMode&quot;&gt;&lt;option value=&quot;bubble&quot;&gt;Bubble sort&lt;/option&gt;&lt;option value=&quot;merge&quot;&gt;Merge sort&lt;/option&gt;&lt;option value=&quot;quick&quot;&gt;Quicksort&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;
+&lt;p class=&quot;p7-status&quot; id=&quot;p7SortStatus&quot;&gt;&lt;/p&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 7: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p7-stage {
+  height: auto;
+  min-height: 310px;
+}
+.p7-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p7-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p7-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p7-sim.p7-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p7-sim.p7-drag canvas:active {
+  cursor: grabbing;
+}
+.p7-sim canvas:focus-visible, .p7-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p7-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p7-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+
+.p7-controls label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.p7-select {
+  max-width: 100%;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--panel-2);
+  font: inherit;
+}
+.p7-select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+.p7-status {
+  display: block;
+  min-height: 2.6em;
+  color: var(--muted);
+  font: .75rem/1.3 var(--mono);
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared simulation drawing helpers. Page helpers supply setupCanvas,
+     addLoop, live, clamp, PALETTE and replayHandlers. */
+  const p7Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id), { cv, ctx } = setupCanvas(host);
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240); ctx.lineCap = &#x27;round&#x27;; ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, begin, line, dot, label };
+  };
+  const p7Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay; replay();
+    addEventListener(&#x27;resize&#x27;, render);
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now; accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+  const p7Random = seed =&gt; () =&gt; {
+    seed = (Math.imul(seed, 1664525) + 1013904223) &gt;&gt;&gt; 0;
+    return seed / 4294967296;
+  };
+
+{
+    const s = p7Surface(&#x27;p7Sort&#x27;), select = $(&#x27;#p7SortMode&#x27;), status = $(&#x27;#p7SortStatus&#x27;);
+    let values, frames, cursor, clock, active, comparisons;
+    const reset = () =&gt; {
+      values = Array.from({ length: 20 }, (_, i) =&gt; 12 + (i * 37 + 23) % 151);
+      const work = [...values]; frames = []; cursor = 0; clock = 0; active = []; comparisons = 0;
+      const record = (indices, compare = true) =&gt; frames.push({ values: [...work], active: indices, compare });
+      const swap = (i, j) =&gt; { [work[i], work[j]] = [work[j], work[i]]; record([i, j], false); };
+      if (select.value === &#x27;merge&#x27;) {
+        const merge = (lo, hi) =&gt; {
+          if (hi - lo &lt; 2) return;
+          const mid = (lo + hi) &gt;&gt; 1; merge(lo, mid); merge(mid, hi);
+          const left = work.slice(lo, mid), right = work.slice(mid, hi); let i = 0, j = 0, k = lo;
+          while (i &lt; left.length || j &lt; right.length) {
+            const comparing = i &lt; left.length &amp;&amp; j &lt; right.length;
+            work[k] = j &gt;= right.length || (i &lt; left.length &amp;&amp; left[i] &lt;= right[j]) ? left[i++] : right[j++];
+            record([k++], comparing);
+          }
+        };
+        merge(0, work.length);
+      } else if (select.value === &#x27;quick&#x27;) {
+        const quick = (lo, hi) =&gt; {
+          if (lo &gt;= hi) return;
+          const pivot = work[hi]; let store = lo;
+          for (let j = lo; j &lt; hi; j++) { record([j, hi]); if (work[j] &lt; pivot) swap(store++, j); }
+          swap(store, hi); quick(lo, store - 1); quick(store + 1, hi);
+        };
+        quick(0, work.length - 1);
+      } else {
+        for (let end = work.length - 1; end &gt; 0; end--) {
+          let changed = false;
+          for (let j = 0; j &lt; end; j++) { record([j, j + 1]); if (work[j] &gt; work[j + 1]) { swap(j, j + 1); changed = true; } }
+          if (!changed) break;
+        }
+      }
+      status.textContent = &#x27;Ready — &#x27; + select.options[select.selectedIndex].text;
+    };
+    const step = dt =&gt; {
+      clock += dt;
+      if (clock &lt; .035 || cursor &gt;= frames.length) return;
+      clock = 0; const frame = frames[cursor++]; values = frame.values; active = frame.active;
+      if (frame.compare) comparisons++;
+      status.textContent = cursor === frames.length ? &#x27;Sorted · &#x27; + comparisons + &#x27; comparisons&#x27; : comparisons + &#x27; comparisons&#x27;;
+      if (cursor === frames.length) active = [];
+    };
+    const draw = () =&gt; {
+      values.forEach((height, i) =&gt; {
+        s.ctx.fillStyle = active.includes(i) ? PALETTE[3] : cursor === frames.length ? PALETTE[4] : PALETTE[0];
+        s.ctx.fillRect(15 + i * 18.5, 215 - height, 13, height);
+      });
+      s.line(12, 216, 385, 216, PALETTE[2], 1);
+      s.label(&#x27;Same starting data for every algorithm&#x27;, 15, 25);
+    };
+    const replay = p7Run(s, &#x27;p7Sort&#x27;, reset, step, draw);
+    select.addEventListener(&#x27;change&#x27;, replay);
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Advanced motion</span><span class="badge js">JS</span><span class="count">422 / 426</span></div><h3>Pathfinding: A* &amp; Dijkstra</h3><p class="desc">Explore the same obstacle grid with <b>A* or Dijkstra</b>. Pink is the frontier, cyan marks visited cells, and amber reveals the shortest route from S to G. Every move has equal cost; A* uses Manhattan distance.</p><p class="desc use"><b>On the web:</b> Navigation explainers, game AI and interactive algorithm lessons.</p><div class="demo-box"><div class="stage p7-stage" data-js-replay="p7Path"><div class="p7-sim" id="p7Path"><canvas role="img" aria-label="Pathfinding: A* &amp; Dijkstra">Your browser needs canvas support for this animation.</canvas></div>
+<div class="p7-controls"><label>Search <select class="p7-select" id="p7PathMode"><option value="astar">A*</option><option value="dijkstra">Dijkstra</option></select></label></div>
+<p class="p7-status" id="p7PathStatus"></p></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Expand the lowest cost + heuristic frontier cell; store parents to reconstruct a shortest route.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p7-sim&quot; id=&quot;p7Path&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Pathfinding: A* &amp;amp; Dijkstra&quot;&gt;Your browser needs canvas support for this animation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p7-controls&quot;&gt;&lt;label&gt;Search &lt;select class=&quot;p7-select&quot; id=&quot;p7PathMode&quot;&gt;&lt;option value=&quot;astar&quot;&gt;A*&lt;/option&gt;&lt;option value=&quot;dijkstra&quot;&gt;Dijkstra&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;
+&lt;p class=&quot;p7-status&quot; id=&quot;p7PathStatus&quot;&gt;&lt;/p&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 7: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p7-stage {
+  height: auto;
+  min-height: 310px;
+}
+.p7-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p7-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p7-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p7-sim.p7-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p7-sim.p7-drag canvas:active {
+  cursor: grabbing;
+}
+.p7-sim canvas:focus-visible, .p7-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p7-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p7-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+
+.p7-controls label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.p7-select {
+  max-width: 100%;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--panel-2);
+  font: inherit;
+}
+.p7-select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+.p7-status {
+  display: block;
+  min-height: 2.6em;
+  color: var(--muted);
+  font: .75rem/1.3 var(--mono);
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared simulation drawing helpers. Page helpers supply setupCanvas,
+     addLoop, live, clamp, PALETTE and replayHandlers. */
+  const p7Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id), { cv, ctx } = setupCanvas(host);
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240); ctx.lineCap = &#x27;round&#x27;; ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, begin, line, dot, label };
+  };
+  const p7Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay; replay();
+    addEventListener(&#x27;resize&#x27;, render);
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now; accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+  const p7Random = seed =&gt; () =&gt; {
+    seed = (Math.imul(seed, 1664525) + 1013904223) &gt;&gt;&gt; 0;
+    return seed / 4294967296;
+  };
+
+{
+    const s = p7Surface(&#x27;p7Path&#x27;), mode = $(&#x27;#p7PathMode&#x27;), status = $(&#x27;#p7PathStatus&#x27;);
+    const columns = 25, rows = 13, start = 26, goal = 298;
+    const neighbors = i =&gt; [i % columns &gt; 0 ? i - 1 : -1, i % columns &lt; columns - 1 ? i + 1 : -1, i - columns, i + columns].filter(j =&gt; j &gt;= 0 &amp;&amp; j &lt; columns * rows);
+    let walls, costs, parent, closed, open, route, reveal, finished, clock;
+    const reset = () =&gt; {
+      walls = new Set();
+      for (let y = 0; y &lt; rows; y++) for (let x = 0; x &lt; columns; x++) {
+        if ((x === 7 &amp;&amp; y !== 9) || (x === 15 &amp;&amp; y !== 3) || (y === 6 &amp;&amp; x &gt; 15 &amp;&amp; x !== 21)) walls.add(y * columns + x);
+      }
+      costs = new Float64Array(columns * rows).fill(Infinity); costs[start] = 0;
+      parent = new Int32Array(columns * rows).fill(-1); closed = new Set(); open = new Set([start]);
+      route = []; reveal = 0; finished = false; clock = 0; status.textContent = &#x27;Ready to search&#x27;;
+    };
+    const heuristic = i =&gt; mode.value === &#x27;astar&#x27; ? Math.abs(i % columns - goal % columns) + Math.abs(Math.floor(i / columns) - Math.floor(goal / columns)) : 0;
+    const step = dt =&gt; {
+      clock += dt; if (clock &lt; .025) return; clock = 0;
+      if (finished) { reveal = Math.min(reveal + 1, route.length); return; }
+      if (!open.size) { finished = true; status.textContent = &#x27;No route found&#x27;; return; }
+      let best = -1;
+      for (const i of open) if (best === -1 || costs[i] + heuristic(i) &lt; costs[best] + heuristic(best)) best = i;
+      open.delete(best); closed.add(best);
+      if (best === goal) {
+        for (let i = goal; i !== -1; i = parent[i]) route.unshift(i);
+        finished = true; status.textContent = &#x27;Shortest route: &#x27; + (route.length - 1) + &#x27; steps · &#x27; + closed.size + &#x27; visited&#x27;; return;
+      }
+      for (const next of neighbors(best)) {
+        if (walls.has(next) || closed.has(next)) continue;
+        const candidate = costs[best] + 1;
+        if (candidate &lt; costs[next]) { costs[next] = candidate; parent[next] = best; open.add(next); }
+      }
+      status.textContent = closed.size + &#x27; visited · &#x27; + open.size + &#x27; frontier&#x27;;
+    };
+    const draw = () =&gt; {
+      const shown = new Set(route.slice(0, reveal));
+      for (let i = 0; i &lt; columns * rows; i++) {
+        s.ctx.fillStyle = walls.has(i) ? PALETTE[0] : shown.has(i) ? PALETTE[3] : closed.has(i) ? PALETTE[2] : open.has(i) ? PALETTE[1] : PALETTE[0];
+        s.ctx.globalAlpha = walls.has(i) || shown.has(i) ? 1 : closed.has(i) ? .45 : open.has(i) ? .65 : .09;
+        s.ctx.fillRect(13 + (i % columns) * 15, 22 + Math.floor(i / columns) * 15, 13, 13);
+      }
+      s.ctx.globalAlpha = 1;
+      for (const [i, text, color] of [[start, &#x27;S&#x27;, PALETTE[4]], [goal, &#x27;G&#x27;, PALETTE[3]]]) {
+        const x = 13 + i % columns * 15, y = 22 + Math.floor(i / columns) * 15;
+        s.ctx.clearRect(x, y, 13, 13); s.label(text, x + 2, y + 11, color);
+      }
+    };
+    const replay = p7Run(s, &#x27;p7Path&#x27;, reset, step, draw);
+    mode.addEventListener(&#x27;change&#x27;, replay);
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Advanced motion</span><span class="badge js">JS</span><span class="count">423 / 426</span></div><h3>Maze generation: recursive backtracker</h3><p class="desc">Watch a maze grow through <b>depth-first search with backtracking</b>. The amber point carves into unvisited neighbors and retreats when it reaches a dead end. The finished maze connects every cell without cycles.</p><p class="desc use"><b>On the web:</b> Puzzle generation, procedural game levels and graph traversal lessons.</p><div class="demo-box"><div class="stage p7-stage" data-js-replay="p7Maze"><div class="p7-sim" id="p7Maze"><canvas role="img" aria-label="Maze generation: recursive backtracker">Your browser needs canvas support for this animation.</canvas></div>
+<div class="p7-controls"><button class="p7-control" id="p7MazeNew" type="button">New maze</button><span>Replay repeats the current seed.</span></div>
+<p class="p7-status" id="p7MazeStatus"></p></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Remove both sides of each shared wall, push the next cell, and pop when no unvisited neighbor remains.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p7-sim&quot; id=&quot;p7Maze&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Maze generation: recursive backtracker&quot;&gt;Your browser needs canvas support for this animation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p7-controls&quot;&gt;&lt;button class=&quot;p7-control&quot; id=&quot;p7MazeNew&quot; type=&quot;button&quot;&gt;New maze&lt;/button&gt;&lt;span&gt;Replay repeats the current seed.&lt;/span&gt;&lt;/div&gt;
+&lt;p class=&quot;p7-status&quot; id=&quot;p7MazeStatus&quot;&gt;&lt;/p&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 7: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p7-stage {
+  height: auto;
+  min-height: 310px;
+}
+.p7-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p7-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p7-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p7-sim.p7-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p7-sim.p7-drag canvas:active {
+  cursor: grabbing;
+}
+.p7-sim canvas:focus-visible, .p7-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p7-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p7-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+
+.p7-controls label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.p7-select {
+  max-width: 100%;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--panel-2);
+  font: inherit;
+}
+.p7-select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+.p7-status {
+  display: block;
+  min-height: 2.6em;
+  color: var(--muted);
+  font: .75rem/1.3 var(--mono);
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared simulation drawing helpers. Page helpers supply setupCanvas,
+     addLoop, live, clamp, PALETTE and replayHandlers. */
+  const p7Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id), { cv, ctx } = setupCanvas(host);
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240); ctx.lineCap = &#x27;round&#x27;; ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, begin, line, dot, label };
+  };
+  const p7Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay; replay();
+    addEventListener(&#x27;resize&#x27;, render);
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now; accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+  const p7Random = seed =&gt; () =&gt; {
+    seed = (Math.imul(seed, 1664525) + 1013904223) &gt;&gt;&gt; 0;
+    return seed / 4294967296;
+  };
+
+{
+    const s = p7Surface(&#x27;p7Maze&#x27;), status = $(&#x27;#p7MazeStatus&#x27;);
+    const columns = 20, rows = 11, total = columns * rows;
+    let walls, seen, stack, random, clock, visited, seed = 47;
+    const reset = () =&gt; {
+      walls = new Uint8Array(total).fill(15); seen = new Uint8Array(total); seen[0] = 1;
+      stack = [0]; random = p7Random(seed); clock = 0; visited = 1; status.textContent = &#x27;1 / &#x27; + total + &#x27; cells carved&#x27;;
+    };
+    const step = dt =&gt; {
+      clock += dt; if (clock &lt; .025 || !stack.length) return; clock = 0;
+      const current = stack[stack.length - 1], x = current % columns, y = Math.floor(current / columns);
+      const candidates = [[x, y - 1, 1, 4], [x + 1, y, 2, 8], [x, y + 1, 4, 1], [x - 1, y, 8, 2]]
+        .filter(([nx, ny]) =&gt; nx &gt;= 0 &amp;&amp; nx &lt; columns &amp;&amp; ny &gt;= 0 &amp;&amp; ny &lt; rows &amp;&amp; !seen[ny * columns + nx]);
+      if (candidates.length) {
+        const [nx, ny, bit, opposite] = candidates[Math.floor(random() * candidates.length)], next = ny * columns + nx;
+        walls[current] &amp;= ~bit; walls[next] &amp;= ~opposite; seen[next] = 1; visited++; stack.push(next);
+      } else stack.pop();
+      status.textContent = stack.length ? visited + &#x27; / &#x27; + total + &#x27; cells carved&#x27; : &#x27;Complete · every cell connected · no cycles&#x27;;
+    };
+    const draw = () =&gt; {
+      for (let i = 0; i &lt; total; i++) {
+        const x = 20 + i % columns * 18, y = 20 + Math.floor(i / columns) * 18;
+        if (seen[i]) { s.ctx.fillStyle = PALETTE[0]; s.ctx.globalAlpha = .17; s.ctx.fillRect(x, y, 18, 18); s.ctx.globalAlpha = 1; }
+        if (walls[i] &amp; 1) s.line(x, y, x + 18, y, PALETTE[2], 1);
+        if (walls[i] &amp; 2) s.line(x + 18, y, x + 18, y + 18, PALETTE[2], 1);
+        if (walls[i] &amp; 4) s.line(x, y + 18, x + 18, y + 18, PALETTE[2], 1);
+        if (walls[i] &amp; 8) s.line(x, y, x, y + 18, PALETTE[2], 1);
+      }
+      if (stack.length) { const i = stack[stack.length - 1]; s.dot(29 + i % columns * 18, 29 + Math.floor(i / columns) * 18, 5, PALETTE[3]); }
+    };
+    const replay = p7Run(s, &#x27;p7Maze&#x27;, reset, step, draw);
+    $(&#x27;#p7MazeNew&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { seed++; replay(); });
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Advanced motion</span><span class="badge js">JS</span><span class="count">424 / 426</span></div><h3>Rigid-body collisions &amp; rotation</h3><p class="desc">Six solid rectangles fall, collide and spin. <b>Separating-axis tests find contacts; impulses change linear and angular velocity</b>. Small substeps and penetration correction help prevent tunneling. This is an educational solver, not a full production physics engine.</p><p class="desc use"><b>On the web:</b> Physics playgrounds, game prototypes and interactive illustrations.</p><div class="demo-box"><div class="stage p7-stage" data-js-replay="p7Bodies"><div class="p7-sim" id="p7Bodies"><canvas role="img" aria-label="Rigid-body collisions &amp; rotation">Your browser needs canvas support for this animation.</canvas></div>
+<div class="p7-controls"><button class="p7-control" id="p7BodiesDrop" type="button">Drop again</button><span>Off-center impacts transfer spin.</span></div></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Project both polygons onto their edge normals; resolve overlap and apply contact impulses using mass and rotational inertia.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p7-sim&quot; id=&quot;p7Bodies&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Rigid-body collisions &amp;amp; rotation&quot;&gt;Your browser needs canvas support for this animation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p7-controls&quot;&gt;&lt;button class=&quot;p7-control&quot; id=&quot;p7BodiesDrop&quot; type=&quot;button&quot;&gt;Drop again&lt;/button&gt;&lt;span&gt;Off-center impacts transfer spin.&lt;/span&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 7: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p7-stage {
+  height: auto;
+  min-height: 310px;
+}
+.p7-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p7-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p7-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p7-sim.p7-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p7-sim.p7-drag canvas:active {
+  cursor: grabbing;
+}
+.p7-sim canvas:focus-visible, .p7-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p7-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p7-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+
+.p7-controls label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.p7-select {
+  max-width: 100%;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--panel-2);
+  font: inherit;
+}
+.p7-select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+.p7-status {
+  display: block;
+  min-height: 2.6em;
+  color: var(--muted);
+  font: .75rem/1.3 var(--mono);
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared simulation drawing helpers. Page helpers supply setupCanvas,
+     addLoop, live, clamp, PALETTE and replayHandlers. */
+  const p7Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id), { cv, ctx } = setupCanvas(host);
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240); ctx.lineCap = &#x27;round&#x27;; ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, begin, line, dot, label };
+  };
+  const p7Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay; replay();
+    addEventListener(&#x27;resize&#x27;, render);
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now; accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+  const p7Random = seed =&gt; () =&gt; {
+    seed = (Math.imul(seed, 1664525) + 1013904223) &gt;&gt;&gt; 0;
+    return seed / 4294967296;
+  };
+
+{
+    const s = p7Surface(&#x27;p7Bodies&#x27;);
+    let bodies;
+    const reset = () =&gt; {
+      bodies = Array.from({ length: 6 }, (_, i) =&gt; {
+        const w = 25 + i % 3 * 8, h = 22 + i % 2 * 10, mass = w * h / 700;
+        return { x: 55 + i % 3 * 140, y: 35 + Math.floor(i / 3) * 70, vx: i % 2 ? -50 : 60, vy: 0, angle: i * .3, spin: i % 2 ? -1.4 : 1.2, w, h, inverseMass: 1 / mass, inverseInertia: 12 / (mass * (w * w + h * h)) };
+      });
+    };
+    const vertices = b =&gt; [[-b.w / 2, -b.h / 2], [b.w / 2, -b.h / 2], [b.w / 2, b.h / 2], [-b.w / 2, b.h / 2]]
+      .map(([x, y]) =&gt; ({ x: b.x + x * Math.cos(b.angle) - y * Math.sin(b.angle), y: b.y + x * Math.sin(b.angle) + y * Math.cos(b.angle) }));
+    const cross = (a, b) =&gt; a.x * b.y - a.y * b.x;
+    const impulse = (a, b, normal, point) =&gt; {
+      const ra = { x: point.x - a.x, y: point.y - a.y }, rb = b ? { x: point.x - b.x, y: point.y - b.y } : { x: 0, y: 0 };
+      const av = { x: a.vx - a.spin * ra.y, y: a.vy + a.spin * ra.x };
+      const bv = b ? { x: b.vx - b.spin * rb.y, y: b.vy + b.spin * rb.x } : { x: 0, y: 0 };
+      const speed = (bv.x - av.x) * normal.x + (bv.y - av.y) * normal.y;
+      if (speed &gt;= 0) return;
+      const denominator = a.inverseMass + (b ? b.inverseMass : 0) + cross(ra, normal) ** 2 * a.inverseInertia + (b ? cross(rb, normal) ** 2 * b.inverseInertia : 0);
+      const magnitude = -(1 + .62) * speed / denominator;
+      const j = { x: magnitude * normal.x, y: magnitude * normal.y };
+      a.vx -= j.x * a.inverseMass; a.vy -= j.y * a.inverseMass; a.spin -= cross(ra, j) * a.inverseInertia;
+      if (b) { b.vx += j.x * b.inverseMass; b.vy += j.y * b.inverseMass; b.spin += cross(rb, j) * b.inverseInertia; }
+    };
+    const collide = (a, b) =&gt; {
+      const av = vertices(a), bv = vertices(b); let depth = Infinity, normal;
+      for (const polygon of [av, bv]) for (let i = 0; i &lt; 2; i++) {
+        const dx = polygon[i + 1].x - polygon[i].x, dy = polygon[i + 1].y - polygon[i].y, length = Math.hypot(dx, dy);
+        const axis = { x: -dy / length, y: dx / length };
+        const pa = av.map(p =&gt; p.x * axis.x + p.y * axis.y), pb = bv.map(p =&gt; p.x * axis.x + p.y * axis.y);
+        const overlap = Math.min(Math.max(...pa), Math.max(...pb)) - Math.max(Math.min(...pa), Math.min(...pb));
+        if (overlap &lt;= 0) return;
+        if (overlap &lt; depth) { depth = overlap; normal = axis; }
+      }
+      if ((b.x - a.x) * normal.x + (b.y - a.y) * normal.y &lt; 0) { normal.x *= -1; normal.y *= -1; }
+      const support = (polygon, sign) =&gt; {
+        const projection = polygon.map(p =&gt; sign * (p.x * normal.x + p.y * normal.y)), maximum = Math.max(...projection);
+        const face = polygon.filter((p, i) =&gt; maximum - projection[i] &lt; .01);
+        return { x: face.reduce((sum, p) =&gt; sum + p.x, 0) / face.length, y: face.reduce((sum, p) =&gt; sum + p.y, 0) / face.length };
+      };
+      const p = support(av, 1), q = support(bv, -1);
+      impulse(a, b, normal, { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 });
+      const correction = Math.max(depth - .01, 0) * .8 / (a.inverseMass + b.inverseMass);
+      a.x -= normal.x * correction * a.inverseMass; a.y -= normal.y * correction * a.inverseMass;
+      b.x += normal.x * correction * b.inverseMass; b.y += normal.y * correction * b.inverseMass;
+    };
+    const boundaries = b =&gt; {
+      for (const [axis, edge, sign] of [[&#x27;x&#x27;, 8, -1], [&#x27;x&#x27;, 392, 1], [&#x27;y&#x27;, 8, -1], [&#x27;y&#x27;, 226, 1]]) {
+        const points = vertices(b), extreme = sign &lt; 0 ? Math.min(...points.map(p =&gt; p[axis])) : Math.max(...points.map(p =&gt; p[axis]));
+        const depth = sign * (extreme - edge); if (depth &lt;= 0) continue;
+        const contacts = points.filter(p =&gt; Math.abs(p[axis] - extreme) &lt; .05);
+        const point = { x: contacts.reduce((v, p) =&gt; v + p.x, 0) / contacts.length, y: contacts.reduce((v, p) =&gt; v + p.y, 0) / contacts.length };
+        const normal = axis === &#x27;x&#x27; ? { x: sign, y: 0 } : { x: 0, y: sign };
+        impulse(b, null, normal, point); b[axis] -= sign * depth;
+      }
+    };
+    const step = dt =&gt; {
+      const h = dt / 4;
+      for (let substep = 0; substep &lt; 4; substep++) {
+        for (const b of bodies) { b.vy += 170 * h; b.x += b.vx * h; b.y += b.vy * h; b.angle += b.spin * h; b.vx *= .999; b.spin *= .999; }
+        for (let iteration = 0; iteration &lt; 3; iteration++) {
+          for (let i = 0; i &lt; bodies.length; i++) for (let j = i + 1; j &lt; bodies.length; j++) collide(bodies[i], bodies[j]);
+          for (const b of bodies) boundaries(b);
+        }
+      }
+    };
+    const draw = () =&gt; {
+      s.line(8, 228, 392, 228, PALETTE[2], 2);
+      bodies.forEach((b, i) =&gt; {
+        s.ctx.save(); s.ctx.translate(b.x, b.y); s.ctx.rotate(b.angle);
+        s.ctx.globalAlpha = .7; s.ctx.fillStyle = PALETTE[i % 5]; s.ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h); s.ctx.globalAlpha = 1;
+        s.line(-b.w / 4, 0, b.w / 4, 0, PALETTE[3], 2); s.ctx.restore();
+      });
+    };
+    const replay = p7Run(s, &#x27;p7Bodies&#x27;, reset, step, draw);
+    $(&#x27;#p7BodiesDrop&#x27;).addEventListener(&#x27;click&#x27;, replay);
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Advanced motion</span><span class="badge js">JS</span><span class="count">425 / 426</span></div><h3>Skeletal skinning: a deforming mesh</h3><p class="desc">A three-bone chain bends a continuous mesh. <b>Each vertex blends neighboring bone transforms after inverse bind-pose transforms</b>, so the surface deforms between joints rather than moving as separate rigid pieces.</p><p class="desc use"><b>On the web:</b> Character rigs, animated illustrations and deformable icons.</p><div class="demo-box"><div class="stage p7-stage" data-js-replay="p7Skin"><div class="p7-sim" id="p7Skin"><canvas role="img" aria-label="Skeletal skinning: a deforming mesh">Your browser needs canvas support for this animation.</canvas></div>
+<div class="p7-controls"><button class="p7-control" id="p7SkinBones" type="button" aria-pressed="true">Hide bones</button><span>Amber lines show the skeleton.</span></div></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>For each vertex: weighted sum of (animated bone transform × inverse bind transform × rest vertex).</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p7-sim&quot; id=&quot;p7Skin&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;Skeletal skinning: a deforming mesh&quot;&gt;Your browser needs canvas support for this animation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p7-controls&quot;&gt;&lt;button class=&quot;p7-control&quot; id=&quot;p7SkinBones&quot; type=&quot;button&quot; aria-pressed=&quot;true&quot;&gt;Hide bones&lt;/button&gt;&lt;span&gt;Amber lines show the skeleton.&lt;/span&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 7: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p7-stage {
+  height: auto;
+  min-height: 310px;
+}
+.p7-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p7-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p7-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p7-sim.p7-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p7-sim.p7-drag canvas:active {
+  cursor: grabbing;
+}
+.p7-sim canvas:focus-visible, .p7-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p7-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p7-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+
+.p7-controls label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.p7-select {
+  max-width: 100%;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--panel-2);
+  font: inherit;
+}
+.p7-select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+.p7-status {
+  display: block;
+  min-height: 2.6em;
+  color: var(--muted);
+  font: .75rem/1.3 var(--mono);
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>  /* Shared simulation drawing helpers. Page helpers supply setupCanvas,
+     addLoop, live, clamp, PALETTE and replayHandlers. */
+  const p7Surface = id =&gt; {
+    const host = $(&#x27;#&#x27; + id), { cv, ctx } = setupCanvas(host);
+    const begin = () =&gt; {
+      ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0);
+      ctx.clearRect(0, 0, 400, 240); ctx.lineCap = &#x27;round&#x27;; ctx.lineJoin = &#x27;round&#x27;;
+    };
+    const line = (x1, y1, x2, y2, color, width = 2) =&gt; {
+      ctx.strokeStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const dot = (x, y, radius, color) =&gt; {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    };
+    const label = (text, x, y, color = PALETTE[2]) =&gt; {
+      ctx.fillStyle = color; ctx.font = &#x27;12px system-ui&#x27;; ctx.fillText(text, x, y);
+    };
+    return { host, cv, ctx, begin, line, dot, label };
+  };
+  const p7Run = (surface, key, reset, step, draw) =&gt; {
+    let previous = 0, accumulator = 0;
+    const render = () =&gt; { surface.begin(); draw(); };
+    const replay = () =&gt; { previous = 0; accumulator = 0; reset(); render(); };
+    replayHandlers[key] = replay; replay();
+    addEventListener(&#x27;resize&#x27;, render);
+    addLoop(surface.host, now =&gt; {
+      const elapsed = previous &amp;&amp; now - previous &lt; 150 ? (now - previous) / 1000 : 1 / 60;
+      previous = now; accumulator = Math.min(accumulator + elapsed, 3 / 60);
+      while (accumulator &gt;= 1 / 60) { step(1 / 60); accumulator -= 1 / 60; }
+      render();
+    });
+    return replay;
+  };
+  const p7Random = seed =&gt; () =&gt; {
+    seed = (Math.imul(seed, 1664525) + 1013904223) &gt;&gt;&gt; 0;
+    return seed / 4294967296;
+  };
+
+{
+    const s = p7Surface(&#x27;p7Skin&#x27;), toggle = $(&#x27;#p7SkinBones&#x27;);
+    const segment = 75;
+    let time, showBones = true;
+    const reset = () =&gt; { time = 0; };
+    const bones = () =&gt; {
+      const rotations = [Math.sin(time * 1.3) * .15, Math.sin(time * 1.3 - .7) * .3, Math.sin(time * 1.3 - 1.4) * .25];
+      const result = []; let x = 88, y = 120, angle = 0;
+      for (const rotation of rotations) { angle += rotation; result.push({ x, y, angle }); x += Math.cos(angle) * segment; y += Math.sin(angle) * segment; }
+      return result;
+    };
+    const deform = (x, y, transforms) =&gt; {
+      // Blend two neighboring bone transforms, each multiplied by inverse bind pose.
+      const coordinate = clamp(x / segment - .5, 0, 2), first = Math.floor(coordinate), second = Math.min(first + 1, 2), weight = coordinate - first;
+      const transform = index =&gt; {
+        const b = transforms[index], localX = x - index * segment;
+        return { x: b.x + Math.cos(b.angle) * localX - Math.sin(b.angle) * y, y: b.y + Math.sin(b.angle) * localX + Math.cos(b.angle) * y };
+      };
+      const a = transform(first), b = transform(second);
+      return { x: a.x * (1 - weight) + b.x * weight, y: a.y * (1 - weight) + b.y * weight };
+    };
+    const step = dt =&gt; { time += dt; };
+    const draw = () =&gt; {
+      const transforms = bones(), rows = [-15, -5, 5, 15];
+      for (let column = 0; column &lt; 30; column++) for (let row = 0; row &lt; rows.length - 1; row++) {
+        const x = column * 7.5, points = [deform(x, rows[row], transforms), deform(x + 7.5, rows[row], transforms), deform(x + 7.5, rows[row + 1], transforms), deform(x, rows[row + 1], transforms)];
+        s.ctx.fillStyle = PALETTE[column &lt; 10 ? 0 : column &lt; 20 ? 1 : 2]; s.ctx.globalAlpha = .6;
+        s.ctx.beginPath(); points.forEach((p, i) =&gt; i ? s.ctx.lineTo(p.x, p.y) : s.ctx.moveTo(p.x, p.y)); s.ctx.closePath(); s.ctx.fill();
+        s.ctx.globalAlpha = 1; s.ctx.strokeStyle = PALETTE[2]; s.ctx.lineWidth = .5; s.ctx.stroke();
+      }
+      if (showBones) for (const b of transforms) {
+        s.line(b.x, b.y, b.x + Math.cos(b.angle) * segment, b.y + Math.sin(b.angle) * segment, PALETTE[3], 3); s.dot(b.x, b.y, 4, PALETTE[3]);
+      }
+      s.label(&#x27;Vertex colors show influence regions&#x27;, 15, 25);
+    };
+    p7Run(s, &#x27;p7Skin&#x27;, reset, step, draw);
+    toggle.addEventListener(&#x27;click&#x27;, () =&gt; { showBones = !showBones; toggle.setAttribute(&#x27;aria-pressed&#x27;, showBones); toggle.textContent = showBones ? &#x27;Hide bones&#x27; : &#x27;Show bones&#x27;; s.begin(); draw(); });
+  }</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Advanced motion</span><span class="badge js">JS</span><span class="count">426 / 426</span></div><h3>WebGL vertex displacement</h3><p class="desc">A vertex shader turns a flat grid into a traveling wave. <b>The GPU computes each vertex height from space and time</b>; the fragment shader colors the height. If WebGL is unavailable, a canvas renderer draws the same animated surface.</p><p class="desc use"><b>On the web:</b> Interactive surfaces, terrain studies and shader-driven backgrounds.</p><div class="demo-box"><div class="stage p7-stage" data-js-replay="p7WebGL"><div class="p7-sim" id="p7WebGL"><canvas role="img" aria-label="WebGL vertex displacement">Your browser needs canvas support for this animation.</canvas></div>
+<div class="p7-controls"><span>A wave is calculated for every mesh vertex.</span></div>
+<p class="p7-status" id="p7WebGLStatus"></p></div><div class="demo-foot"><button class="foot-btn show-code" type="button" aria-expanded="false">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Displace mesh vertices with sin(x × frequency + time) × cos(z × frequency − time), then project the surface.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p7-sim&quot; id=&quot;p7WebGL&quot;&gt;&lt;canvas role=&quot;img&quot; aria-label=&quot;WebGL vertex displacement&quot;&gt;Your browser needs canvas support for this animation.&lt;/canvas&gt;&lt;/div&gt;
+&lt;div class=&quot;p7-controls&quot;&gt;&lt;span&gt;A wave is calculated for every mesh vertex.&lt;/span&gt;&lt;/div&gt;
+&lt;p class=&quot;p7-status&quot; id=&quot;p7WebGLStatus&quot;&gt;&lt;/p&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+/* Part 7: shared simulation presentation; design tokens come from styles.css. */
+.demo-box &gt; .stage.p7-stage {
+  height: auto;
+  min-height: 310px;
+}
+.p7-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+}
+.p7-sim {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.p7-sim canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.p7-sim.p7-drag canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.p7-sim.p7-drag canvas:active {
+  cursor: grabbing;
+}
+.p7-sim canvas:focus-visible, .p7-control:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+.p7-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.p7-control {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: .75rem;
+}
+
+.p7-controls label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.p7-select {
+  max-width: 100%;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--panel-2);
+  font: inherit;
+}
+.p7-select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+.p7-status {
+  display: block;
+  min-height: 2.6em;
+  color: var(--muted);
+  font: .75rem/1.3 var(--mono);
+}
+</code></pre></div><div class="code-block"><div class="code-head"><span>JavaScript</span><button class="copy-code" type="button">Copy</button></div><pre><code>{
+    const host = $(&#x27;#p7WebGL&#x27;), status = $(&#x27;#p7WebGLStatus&#x27;);
+    let cv = $(&#x27;canvas&#x27;, host), gl, ctx, program, buffer, timeLocation, positionLocation, count, time = 0, previous = 0, lost = false;
+    const vertexSource = `
+      attribute vec2 aPosition;
+      uniform float uTime;
+      varying float vHeight;
+      void main() {
+        float x = aPosition.x, z = aPosition.y;
+        float height = sin(x * 5.0 + uTime * 1.6) * cos(z * 4.0 - uTime) * 0.18;
+        vHeight = height;
+        gl_Position = vec4((x - z) * 0.48, (x + z) * 0.22 + height, (x + z) * 0.1, 1.0);
+      }`;
+    const fragmentSource = `
+      precision mediump float;
+      varying float vHeight;
+      void main() {
+        vec3 violet = vec3(124.0, 92.0, 255.0) / 255.0;
+        vec3 cyan = vec3(34.0, 211.0, 238.0) / 255.0;
+        gl_FragColor = vec4(mix(violet, cyan, clamp(vHeight * 2.5 + 0.5, 0.0, 1.0)), 1.0);
+      }`;
+    const geometry = [];
+    for (let y = 0; y &lt;= 36; y++) for (let x = 0; x &lt;= 36; x++) {
+      const px = x / 18 - 1, py = y / 18 - 1;
+      if (x &lt; 36) geometry.push(px, py, px + 1 / 18, py);
+      if (y &lt; 36) geometry.push(px, py, px, py + 1 / 18);
+    }
+    const fallback = () =&gt; {
+      // A canvas cannot switch context types; replace it before requesting 2D.
+      const replacement = cv.cloneNode(true); cv.replaceWith(replacement); cv = replacement; gl = null;
+      ctx = cv.getContext(&#x27;2d&#x27;); status.textContent = &#x27;Canvas fallback — WebGL unavailable&#x27;;
+    };
+    const initialize = () =&gt; {
+      gl = cv.getContext(&#x27;webgl&#x27;, { alpha: true, antialias: true, preserveDrawingBuffer: true });
+      if (!gl) { fallback(); return; }
+      const shader = (type, source) =&gt; {
+        const result = gl.createShader(type); gl.shaderSource(result, source); gl.compileShader(result);
+        if (!gl.getShaderParameter(result, gl.COMPILE_STATUS)) { const message = gl.getShaderInfoLog(result); gl.deleteShader(result); throw new Error(message); }
+        return result;
+      };
+      const graphics = gl;
+      let vertex, fragment;
+      try {
+        vertex = shader(gl.VERTEX_SHADER, vertexSource); fragment = shader(gl.FRAGMENT_SHADER, fragmentSource);
+        program = gl.createProgram(); gl.attachShader(program, vertex); gl.attachShader(program, fragment); gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
+        gl.useProgram(program); buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(geometry), gl.STATIC_DRAW); count = geometry.length / 2;
+        positionLocation = gl.getAttribLocation(program, &#x27;aPosition&#x27;); timeLocation = gl.getUniformLocation(program, &#x27;uTime&#x27;);
+        gl.enableVertexAttribArray(positionLocation); gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+        status.textContent = &#x27;WebGL vertex shader · &#x27; + count + &#x27; line vertices&#x27;;
+      } catch (error) {
+        if (buffer) gl.deleteBuffer(buffer); if (program) gl.deleteProgram(program);
+        fallback();
+      } finally { if (vertex) graphics.deleteShader(vertex); if (fragment) graphics.deleteShader(fragment); }
+    };
+    const draw = () =&gt; {
+      if (lost) return;
+      if (gl) {
+        gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.useProgram(program); gl.uniform1f(timeLocation, time); gl.drawArrays(gl.LINES, 0, count);
+      } else if (ctx) {
+        ctx.setTransform(cv.width / 400, 0, 0, cv.height / 240, 0, 0); ctx.clearRect(0, 0, 400, 240);
+        ctx.strokeStyle = PALETTE[2]; ctx.lineWidth = .8;
+        const project = (x, z) =&gt; {
+          const height = Math.sin(x * 5 + time * 1.6) * Math.cos(z * 4 - time) * .18;
+          return [200 + (x - z) * 96, 120 - ((x + z) * .22 + height) * 120];
+        };
+        ctx.beginPath();
+        for (let i = 0; i &lt; geometry.length; i += 4) { ctx.moveTo(...project(geometry[i], geometry[i + 1])); ctx.lineTo(...project(geometry[i + 2], geometry[i + 3])); }
+        ctx.stroke();
+      }
+    };
+    const fit = () =&gt; { const dpr = Math.min(2, devicePixelRatio || 1); cv.width = Math.max(1, Math.round(host.clientWidth * dpr)); cv.height = Math.max(1, Math.round(host.clientHeight * dpr)); draw(); };
+    cv.addEventListener(&#x27;webglcontextlost&#x27;, e =&gt; { e.preventDefault(); lost = true; previous = 0; status.textContent = &#x27;Graphics context lost — waiting to restore&#x27;; });
+    cv.addEventListener(&#x27;webglcontextrestored&#x27;, () =&gt; { lost = false; initialize(); fit(); });
+    initialize(); fit(); addEventListener(&#x27;resize&#x27;, fit);
+    replayHandlers.p7WebGL = () =&gt; { time = 0; previous = 0; draw(); };
+    addLoop(host, now =&gt; {
+      if (lost) return;
+      time += previous &amp;&amp; now - previous &lt; 150 ? Math.min((now - previous) / 1000, .05) : 1 / 60;
+      previous = now; draw();
+    });
+  }</code></pre></div></div></div></article>
+</div></section></main>
+<footer>Web Motion Playground · Part 7 · <code>part7.css</code> + <code>part7.js</code> · <a href="index.html">Parts 1 &amp; 2</a> · <a href="more.html">Part 3</a> · <a href="part4.html">Part 4</a> · <a href="part5.html">Part 5</a> · <a href="part6.html">Part 6</a></footer>
+<script src="part7.js"></script>
+</body></html>
