@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Motion Studies — Part 5 · Web Motion Playground</title>
+<meta name="description" content="Five additional CSS motion studies: walking gait, moiré interference, standing waves, rolling cycloids and Lissajous figures. Demos 409–413 with live code."/>
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="part5.css"/>
+</head>
+<body>
+<div class="page-progress" id="pageProgress"></div>
+<header class="hero"><div class="hero-blob b1"></div><div class="hero-blob b2"></div><div class="hero-inner">
+<p class="eyebrow">Part 5 · Interactive reference · HTML + CSS</p>
+<h1><span class="word" style="--i:0">More</span> <span class="word grad-text" style="--i:1">Motion Studies</span></h1>
+<p class="lead">The first four parts cover 408 demos. Here are <strong>5 additional motion studies</strong> — demos 409 to 413 — exploring jointed characters, optical interference and mathematical motion. Every demo includes its HTML and CSS. This catalog can keep growing: animation has no finite list of possible effects.</p>
+<div class="hero-actions"><a class="btn" href="index.html">Parts 1 &amp; 2</a><a class="btn" href="more.html">Part 3</a><a class="btn" href="part4.html">Part 4</a><a class="btn primary" href="#motion-studies">Start browsing ↓</a><button class="btn" id="pauseAll" type="button">⏸ Pause all motion</button></div>
+<p class="motion-note">Your system asks for reduced motion, so animations start paused. Press "Play all motion" to watch them.</p>
+</div></header>
+<nav class="toc" aria-label="Sections"><ul><li><a href="index.html">Parts 1 &amp; 2</a></li><li><a href="more.html">Part 3</a></li><li><a href="part4.html">Part 4</a></li><li><a href="#motion-studies">Motion studies</a></li></ul></nav>
+<main><section class="section" id="motion-studies"><div class="sec-head reveal"><span class="sec-num">47</span><h2>Characters, interference &amp; mathematical motion</h2></div><p class="sec-intro reveal">These patterns extend the existing catalog with <strong>joint hierarchies, phase relationships and coordinated transforms</strong>. All five run with CSS; the page script supplies the same pause, off-screen suspension, replay and code controls as the other parts.</p><div class="demos">
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Motion study</span><span class="count">409 / 413</span></div><h3>Walking gait cycle</h3><p class="desc">A jointed figure walks in place: <b>opposite arms and legs swing together</b>, while the knees bend and the body rises twice per stride.</p><p class="desc use"><b>On the web:</b> Character loops, onboarding mascots and game prototypes.</p><div class="demo-box"><div class="stage"><div class="p5-walk" aria-hidden="true">
+  <div class="p5-person"><i class="p5-head"></i><i class="p5-body"></i>
+    <i class="p5-arm p5-back"></i><i class="p5-leg p5-back"><i></i></i>
+    <i class="p5-arm"></i><i class="p5-leg"><i></i></i>
+  </div><div class="p5-ground"></div>
+</div></div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Offset the far limbs by half a cycle; animate each joint around its attachment point.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p5-walk&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;div class=&quot;p5-person&quot;&gt;&lt;i class=&quot;p5-head&quot;&gt;&lt;/i&gt;&lt;i class=&quot;p5-body&quot;&gt;&lt;/i&gt;
+    &lt;i class=&quot;p5-arm p5-back&quot;&gt;&lt;/i&gt;&lt;i class=&quot;p5-leg p5-back&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;/i&gt;
+    &lt;i class=&quot;p5-arm&quot;&gt;&lt;/i&gt;&lt;i class=&quot;p5-leg&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;/i&gt;
+  &lt;/div&gt;&lt;div class=&quot;p5-ground&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p5-walk {
+  position: relative;
+  width: 260px;
+  height: 200px;
+}
+.p5-person {
+  position: absolute;
+  left: 125px;
+  top: 32px;
+  animation: p5-bob .6s ease-in-out infinite;
+}
+.p5-person i {
+  position: absolute;
+  display: block;
+  border-radius: 12px;
+  background: var(--cyan);
+}
+.p5-person .p5-head {
+  width: 26px;
+  height: 26px;
+  left: -9px;
+  top: -28px;
+}
+.p5-person .p5-body {
+  width: 12px;
+  height: 58px;
+}
+.p5-person .p5-arm {
+  width: 8px;
+  height: 49px;
+  top: 9px;
+  left: 2px;
+  transform-origin: 50% 4px;
+  animation: p5-stride 1.2s ease-in-out infinite;
+  animation-delay: -.6s;
+}
+.p5-person .p5-leg {
+  width: 10px;
+  height: 44px;
+  top: 51px;
+  left: 1px;
+  transform-origin: 50% 4px;
+  animation: p5-stride 1.2s ease-in-out infinite;
+}
+.p5-leg &gt; i {
+  width: 10px;
+  height: 43px;
+  top: 36px;
+  transform-origin: 50% 4px;
+  animation: p5-knee 1.2s ease-in-out infinite;
+}
+.p5-person .p5-back, .p5-back &gt; i {
+  background: var(--violet);
+  animation-delay: -.6s;
+}
+.p5-person .p5-arm.p5-back {
+  animation-delay: 0s;
+}
+.p5-ground {
+  position: absolute;
+  bottom: 32px;
+  width: 100%;
+  border-bottom: 1px solid var(--muted);
+}
+@keyframes p5-stride {
+  0%, 100% { transform: rotate(-30deg); }
+  50% { transform: rotate(30deg); }
+}
+@keyframes p5-knee {
+  0%, 50%, 100% { transform: rotate(0); }
+  75% { transform: rotate(-55deg); }
+}
+@keyframes p5-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Motion study</span><span class="count">410 / 413</span></div><h3>Moiré interference</h3><p class="desc">Two fine stripe patterns overlap. <b>A tiny rotation creates broad moving bands</b>, even though neither layer changes its spacing.</p><p class="desc use"><b>On the web:</b> Optical illustrations, poster art and decorative backgrounds. Keep this subtle and avoid high contrast flashing.</p><div class="demo-box"><div class="stage"><div class="p5-moire" aria-hidden="true"><i></i><i></i></div></div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Overlay two repeating gradients and slowly rotate only the upper layer.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p5-moire&quot; aria-hidden=&quot;true&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p5-moire {
+  position: relative;
+  width: 240px;
+  height: 190px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+.p5-moire i {
+  position: absolute;
+  inset: -70px;
+  opacity: .45;
+  background: repeating-linear-gradient(90deg, var(--cyan) 0 1px, transparent 1px 7px);
+}
+.p5-moire i + i {
+  background: repeating-linear-gradient(90deg, var(--violet) 0 1px, transparent 1px 7px);
+  animation: p5-interfere 12s ease-in-out infinite alternate;
+}
+@keyframes p5-interfere {
+  from { transform: rotate(3deg); }
+  to { transform: rotate(18deg); }
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Motion study</span><span class="count">411 / 413</span></div><h3>Standing wave with fixed nodes</h3><p class="desc">The endpoints stay still while the middle oscillates. <b>Each point has its own amplitude, but shares the same phase</b>, creating the first mode of a vibrating string.</p><p class="desc use"><b>On the web:</b> Science explainers, string simulations and audio education.</p><div class="demo-box"><div class="stage"><div class="p5-wave" aria-hidden="true">
+  <i style="--amp:0.000px"></i>
+  <i style="--amp:8.604px"></i>
+  <i style="--amp:16.996px"></i>
+  <i style="--amp:24.969px"></i>
+  <i style="--amp:32.328px"></i>
+  <i style="--amp:38.891px"></i>
+  <i style="--amp:44.496px"></i>
+  <i style="--amp:49.005px"></i>
+  <i style="--amp:52.308px"></i>
+  <i style="--amp:54.323px"></i>
+  <i style="--amp:55.000px"></i>
+  <i style="--amp:54.323px"></i>
+  <i style="--amp:52.308px"></i>
+  <i style="--amp:49.005px"></i>
+  <i style="--amp:44.496px"></i>
+  <i style="--amp:38.891px"></i>
+  <i style="--amp:32.328px"></i>
+  <i style="--amp:24.969px"></i>
+  <i style="--amp:16.996px"></i>
+  <i style="--amp:8.604px"></i>
+  <i style="--amp:0.000px"></i>
+</div></div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Set amplitude to A × sin(π × index / intervals); keep timing identical for every point.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p5-wave&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;i style=&quot;--amp:0.000px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:8.604px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:16.996px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:24.969px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:32.328px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:38.891px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:44.496px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:49.005px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:52.308px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:54.323px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:55.000px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:54.323px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:52.308px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:49.005px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:44.496px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:38.891px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:32.328px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:24.969px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:16.996px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:8.604px&quot;&gt;&lt;/i&gt;
+  &lt;i style=&quot;--amp:0.000px&quot;&gt;&lt;/i&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p5-wave {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(88%, 300px);
+  height: 160px;
+  border-left: 2px solid var(--muted);
+  border-right: 2px solid var(--muted);
+}
+.p5-wave i {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: p5-vibrate 2s ease-in-out infinite;
+}
+@keyframes p5-vibrate {
+  0%, 100% { transform: translateY(var(--amp)); }
+  50% { transform: translateY(calc(-1 * var(--amp))); }
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Motion study</span><span class="count">412 / 413</span></div><h3>Rolling wheel / cycloid</h3><p class="desc">A point on the rim of a wheel follows the outlined cycloid. <b>One full turn travels exactly one circumference</b>, so the wheel rolls without slipping. The loop resets after one turn.</p><p class="desc use"><b>On the web:</b> Geometry lessons, mechanism diagrams and illustrated journeys.</p><div class="demo-box"><div class="stage"><div class="p5-cycloid" aria-hidden="true">
+  <svg viewBox="0 0 300 180"><polyline points="52.000,130.000 52.001,129.959 52.006,129.836 52.019,129.631 52.046,129.344 52.089,128.978 52.154,128.532 52.245,128.007 52.364,127.406 52.517,126.730 52.708,125.981 52.940,125.160 53.216,124.271 53.541,123.314 53.917,122.294 54.349,121.213 54.838,120.074 55.389,118.880 56.004,117.634 56.685,116.339 57.435,115.000 58.257,113.620 59.151,112.202 60.121,110.751 61.167,109.271 62.292,107.765 63.496,106.237 64.781,104.693 66.147,103.136 67.594,101.570 69.124,100.000 70.736,98.430 72.430,96.864 74.206,95.307 76.063,93.763 78.000,92.235 80.017,90.729 82.112,89.249 84.284,87.798 86.531,86.380 88.851,85.000 91.243,83.661 93.703,82.366 96.230,81.120 98.821,79.926 101.473,78.787 104.183,77.706 106.948,76.686 109.765,75.729 112.630,74.840 115.540,74.019 118.491,73.270 121.479,72.594 124.501,71.993 127.552,71.468 130.629,71.022 133.727,70.656 136.842,70.369 139.970,70.164 143.107,70.041 146.248,70.000 149.389,70.041 152.525,70.164 155.653,70.369 158.768,70.656 161.866,71.022 164.943,71.468 167.994,71.993 171.016,72.594 174.005,73.270 176.956,74.019 179.866,74.840 182.731,75.729 185.548,76.686 188.313,77.706 191.023,78.787 193.675,79.926 196.266,81.120 198.793,82.366 201.253,83.661 203.644,85.000 205.965,86.380 208.212,87.798 210.384,89.249 212.479,90.729 214.495,92.235 216.433,93.763 218.290,95.307 220.066,96.864 221.760,98.430 223.372,100.000 224.901,101.570 226.349,103.136 227.715,104.693 228.999,106.237 230.203,107.765 231.328,109.271 232.375,110.751 233.344,112.202 234.239,113.620 235.060,115.000 235.811,116.339 236.492,117.634 237.106,118.880 237.657,120.074 238.147,121.213 238.578,122.294 238.955,123.314 239.280,124.271 239.556,125.160 239.788,125.981 239.978,126.730 240.131,127.406 240.251,128.007 240.341,128.532 240.406,128.978 240.450,129.344 240.476,129.631 240.490,129.836 240.495,129.959 240.496,130.000"/></svg>
+  <div class="p5-wheel-travel"><div class="p5-wheel"><i></i></div></div>
+</div></div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>distance = radius × angle (radians); translate the parent and rotate the wheel independently.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p5-cycloid&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 300 180&quot;&gt;&lt;polyline points=&quot;52.000,130.000 52.001,129.959 52.006,129.836 52.019,129.631 52.046,129.344 52.089,128.978 52.154,128.532 52.245,128.007 52.364,127.406 52.517,126.730 52.708,125.981 52.940,125.160 53.216,124.271 53.541,123.314 53.917,122.294 54.349,121.213 54.838,120.074 55.389,118.880 56.004,117.634 56.685,116.339 57.435,115.000 58.257,113.620 59.151,112.202 60.121,110.751 61.167,109.271 62.292,107.765 63.496,106.237 64.781,104.693 66.147,103.136 67.594,101.570 69.124,100.000 70.736,98.430 72.430,96.864 74.206,95.307 76.063,93.763 78.000,92.235 80.017,90.729 82.112,89.249 84.284,87.798 86.531,86.380 88.851,85.000 91.243,83.661 93.703,82.366 96.230,81.120 98.821,79.926 101.473,78.787 104.183,77.706 106.948,76.686 109.765,75.729 112.630,74.840 115.540,74.019 118.491,73.270 121.479,72.594 124.501,71.993 127.552,71.468 130.629,71.022 133.727,70.656 136.842,70.369 139.970,70.164 143.107,70.041 146.248,70.000 149.389,70.041 152.525,70.164 155.653,70.369 158.768,70.656 161.866,71.022 164.943,71.468 167.994,71.993 171.016,72.594 174.005,73.270 176.956,74.019 179.866,74.840 182.731,75.729 185.548,76.686 188.313,77.706 191.023,78.787 193.675,79.926 196.266,81.120 198.793,82.366 201.253,83.661 203.644,85.000 205.965,86.380 208.212,87.798 210.384,89.249 212.479,90.729 214.495,92.235 216.433,93.763 218.290,95.307 220.066,96.864 221.760,98.430 223.372,100.000 224.901,101.570 226.349,103.136 227.715,104.693 228.999,106.237 230.203,107.765 231.328,109.271 232.375,110.751 233.344,112.202 234.239,113.620 235.060,115.000 235.811,116.339 236.492,117.634 237.106,118.880 237.657,120.074 238.147,121.213 238.578,122.294 238.955,123.314 239.280,124.271 239.556,125.160 239.788,125.981 239.978,126.730 240.131,127.406 240.251,128.007 240.341,128.532 240.406,128.978 240.450,129.344 240.476,129.631 240.490,129.836 240.495,129.959 240.496,130.000&quot;/&gt;&lt;/svg&gt;
+  &lt;div class=&quot;p5-wheel-travel&quot;&gt;&lt;div class=&quot;p5-wheel&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p5-cycloid {
+  position: relative;
+  width: 300px;
+  height: 180px;
+}
+.p5-cycloid svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+}
+.p5-cycloid::after {
+  content: &quot;&quot;;
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 130px;
+  border-top: 1px solid var(--line);
+}
+.p5-wheel-travel {
+  position: absolute;
+  left: 22px;
+  top: 70px;
+  animation: p5-roll-travel 6s linear infinite;
+}
+.p5-wheel {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border: 2px solid var(--violet);
+  border-radius: 50%;
+  animation: p5-roll-turn 6s linear infinite;
+}
+.p5-wheel i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: 24px;
+  top: 54px;
+  border-radius: 50%;
+  background: var(--pink);
+}
+@keyframes p5-roll-travel {
+  to { transform: translateX(188.49556px); }
+}
+@keyframes p5-roll-turn {
+  to { transform: rotate(360deg); }
+}</code></pre></div></div></div></article>
+<article class="demo reveal"><div class="demo-meta"><span class="badge">Motion study</span><span class="count">413 / 413</span></div><h3>Lissajous figure (2:3)</h3><p class="desc">Combine independent horizontal and vertical oscillations. <b>Two horizontal cycles and three vertical cycles</b> produce a repeating woven curve. The outlined curve is the exact sine reference; CSS easing approximates the moving point.</p><p class="desc use"><b>On the web:</b> Signal explainers, generative art and coordinated motion studies.</p><div class="demo-box"><div class="stage"><div class="p5-lissajous" aria-hidden="true">
+  <svg viewBox="0 0 300 200"><polyline points="150.000,100.000 153.141,103.140 156.278,106.272 159.408,109.386 162.526,112.475 165.628,115.529 168.712,118.541 171.773,121.502 174.807,124.404 177.812,127.239 180.782,130.000 183.715,132.678 186.606,135.267 189.453,137.759 192.252,140.148 195.000,142.426 197.693,144.589 200.327,146.629 202.901,148.541 205.410,150.320 207.851,151.962 210.222,153.460 212.519,154.813 214.741,156.015 216.883,157.063 218.944,157.956 220.921,158.689 222.812,159.261 224.613,159.671 226.324,159.918 227.942,160.000 229.465,159.918 230.891,159.671 232.219,159.261 233.447,158.689 234.572,157.956 235.595,157.063 236.514,156.015 237.327,154.813 238.033,153.460 238.633,151.962 239.124,150.320 239.507,148.541 239.781,146.629 239.945,144.589 240.000,142.426 239.945,140.148 239.781,137.759 239.507,135.267 239.124,132.678 238.633,130.000 238.033,127.239 237.327,124.404 236.514,121.502 235.595,118.541 234.572,115.529 233.447,112.475 232.219,109.386 230.891,106.272 229.465,103.140 227.942,100.000 226.324,96.860 224.613,93.728 222.812,90.614 220.921,87.525 218.944,84.471 216.883,81.459 214.741,78.498 212.519,75.596 210.222,72.761 207.851,70.000 205.410,67.322 202.901,64.733 200.327,62.241 197.693,59.852 195.000,57.574 192.252,55.411 189.453,53.371 186.606,51.459 183.715,49.680 180.782,48.038 177.812,46.540 174.807,45.187 171.773,43.985 168.712,42.937 165.628,42.044 162.526,41.311 159.408,40.739 156.278,40.329 153.141,40.082 150.000,40.000 146.859,40.082 143.722,40.329 140.592,40.739 137.474,41.311 134.372,42.044 131.288,42.937 128.227,43.985 125.193,45.187 122.188,46.540 119.218,48.038 116.285,49.680 113.394,51.459 110.547,53.371 107.748,55.411 105.000,57.574 102.307,59.852 99.673,62.241 97.099,64.733 94.590,67.322 92.149,70.000 89.778,72.761 87.481,75.596 85.259,78.498 83.117,81.459 81.056,84.471 79.079,87.525 77.188,90.614 75.387,93.728 73.676,96.860 72.058,100.000 70.535,103.140 69.109,106.272 67.781,109.386 66.553,112.475 65.428,115.529 64.405,118.541 63.486,121.502 62.673,124.404 61.967,127.239 61.367,130.000 60.876,132.678 60.493,135.267 60.219,137.759 60.055,140.148 60.000,142.426 60.055,144.589 60.219,146.629 60.493,148.541 60.876,150.320 61.367,151.962 61.967,153.460 62.673,154.813 63.486,156.015 64.405,157.063 65.428,157.956 66.553,158.689 67.781,159.261 69.109,159.671 70.535,159.918 72.058,160.000 73.676,159.918 75.387,159.671 77.188,159.261 79.079,158.689 81.056,157.956 83.117,157.063 85.259,156.015 87.481,154.813 89.778,153.460 92.149,151.962 94.590,150.320 97.099,148.541 99.673,146.629 102.307,144.589 105.000,142.426 107.748,140.148 110.547,137.759 113.394,135.267 116.285,132.678 119.218,130.000 122.188,127.239 125.193,124.404 128.227,121.502 131.288,118.541 134.372,115.529 137.474,112.475 140.592,109.386 143.722,106.272 146.859,103.140 150.000,100.000 153.141,96.860 156.278,93.728 159.408,90.614 162.526,87.525 165.628,84.471 168.712,81.459 171.773,78.498 174.807,75.596 177.812,72.761 180.782,70.000 183.715,67.322 186.606,64.733 189.453,62.241 192.252,59.852 195.000,57.574 197.693,55.411 200.327,53.371 202.901,51.459 205.410,49.680 207.851,48.038 210.222,46.540 212.519,45.187 214.741,43.985 216.883,42.937 218.944,42.044 220.921,41.311 222.812,40.739 224.613,40.329 226.324,40.082 227.942,40.000 229.465,40.082 230.891,40.329 232.219,40.739 233.447,41.311 234.572,42.044 235.595,42.937 236.514,43.985 237.327,45.187 238.033,46.540 238.633,48.038 239.124,49.680 239.507,51.459 239.781,53.371 239.945,55.411 240.000,57.574 239.945,59.852 239.781,62.241 239.507,64.733 239.124,67.322 238.633,70.000 238.033,72.761 237.327,75.596 236.514,78.498 235.595,81.459 234.572,84.471 233.447,87.525 232.219,90.614 230.891,93.728 229.465,96.860 227.942,100.000 226.324,103.140 224.613,106.272 222.812,109.386 220.921,112.475 218.944,115.529 216.883,118.541 214.741,121.502 212.519,124.404 210.222,127.239 207.851,130.000 205.410,132.678 202.901,135.267 200.327,137.759 197.693,140.148 195.000,142.426 192.252,144.589 189.453,146.629 186.606,148.541 183.715,150.320 180.782,151.962 177.812,153.460 174.807,154.813 171.773,156.015 168.712,157.063 165.628,157.956 162.526,158.689 159.408,159.261 156.278,159.671 153.141,159.918 150.000,160.000 146.859,159.918 143.722,159.671 140.592,159.261 137.474,158.689 134.372,157.956 131.288,157.063 128.227,156.015 125.193,154.813 122.188,153.460 119.218,151.962 116.285,150.320 113.394,148.541 110.547,146.629 107.748,144.589 105.000,142.426 102.307,140.148 99.673,137.759 97.099,135.267 94.590,132.678 92.149,130.000 89.778,127.239 87.481,124.404 85.259,121.502 83.117,118.541 81.056,115.529 79.079,112.475 77.188,109.386 75.387,106.272 73.676,103.140 72.058,100.000 70.535,96.860 69.109,93.728 67.781,90.614 66.553,87.525 65.428,84.471 64.405,81.459 63.486,78.498 62.673,75.596 61.967,72.761 61.367,70.000 60.876,67.322 60.493,64.733 60.219,62.241 60.055,59.852 60.000,57.574 60.055,55.411 60.219,53.371 60.493,51.459 60.876,49.680 61.367,48.038 61.967,46.540 62.673,45.187 63.486,43.985 64.405,42.937 65.428,42.044 66.553,41.311 67.781,40.739 69.109,40.329 70.535,40.082 72.058,40.000 73.676,40.082 75.387,40.329 77.188,40.739 79.079,41.311 81.056,42.044 83.117,42.937 85.259,43.985 87.481,45.187 89.778,46.540 92.149,48.038 94.590,49.680 97.099,51.459 99.673,53.371 102.307,55.411 105.000,57.574 107.748,59.852 110.547,62.241 113.394,64.733 116.285,67.322 119.218,70.000 122.188,72.761 125.193,75.596 128.227,78.498 131.288,81.459 134.372,84.471 137.474,87.525 140.592,90.614 143.722,93.728 146.859,96.860 150.000,100.000"/></svg>
+  <div class="p5-axis-x"><i></i></div>
+</div></div><div class="demo-foot"><button aria-expanded="false" class="foot-btn show-code" type="button">Show code</button><button class="foot-btn replay-btn" type="button">Replay <span class="ico">↻</span></button></div><div class="code-panel" hidden><div class="code-block"><div class="code-head"><span>Key idea</span><button class="copy-code" type="button">Copy</button></div><pre><code>Animate X and Y on nested elements so transforms do not overwrite each other; use durations in a 3:2 ratio.</code></pre></div><div class="code-block"><div class="code-head"><span>HTML</span><button class="copy-code" type="button">Copy</button></div><pre><code>&lt;div class=&quot;p5-lissajous&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 300 200&quot;&gt;&lt;polyline points=&quot;150.000,100.000 153.141,103.140 156.278,106.272 159.408,109.386 162.526,112.475 165.628,115.529 168.712,118.541 171.773,121.502 174.807,124.404 177.812,127.239 180.782,130.000 183.715,132.678 186.606,135.267 189.453,137.759 192.252,140.148 195.000,142.426 197.693,144.589 200.327,146.629 202.901,148.541 205.410,150.320 207.851,151.962 210.222,153.460 212.519,154.813 214.741,156.015 216.883,157.063 218.944,157.956 220.921,158.689 222.812,159.261 224.613,159.671 226.324,159.918 227.942,160.000 229.465,159.918 230.891,159.671 232.219,159.261 233.447,158.689 234.572,157.956 235.595,157.063 236.514,156.015 237.327,154.813 238.033,153.460 238.633,151.962 239.124,150.320 239.507,148.541 239.781,146.629 239.945,144.589 240.000,142.426 239.945,140.148 239.781,137.759 239.507,135.267 239.124,132.678 238.633,130.000 238.033,127.239 237.327,124.404 236.514,121.502 235.595,118.541 234.572,115.529 233.447,112.475 232.219,109.386 230.891,106.272 229.465,103.140 227.942,100.000 226.324,96.860 224.613,93.728 222.812,90.614 220.921,87.525 218.944,84.471 216.883,81.459 214.741,78.498 212.519,75.596 210.222,72.761 207.851,70.000 205.410,67.322 202.901,64.733 200.327,62.241 197.693,59.852 195.000,57.574 192.252,55.411 189.453,53.371 186.606,51.459 183.715,49.680 180.782,48.038 177.812,46.540 174.807,45.187 171.773,43.985 168.712,42.937 165.628,42.044 162.526,41.311 159.408,40.739 156.278,40.329 153.141,40.082 150.000,40.000 146.859,40.082 143.722,40.329 140.592,40.739 137.474,41.311 134.372,42.044 131.288,42.937 128.227,43.985 125.193,45.187 122.188,46.540 119.218,48.038 116.285,49.680 113.394,51.459 110.547,53.371 107.748,55.411 105.000,57.574 102.307,59.852 99.673,62.241 97.099,64.733 94.590,67.322 92.149,70.000 89.778,72.761 87.481,75.596 85.259,78.498 83.117,81.459 81.056,84.471 79.079,87.525 77.188,90.614 75.387,93.728 73.676,96.860 72.058,100.000 70.535,103.140 69.109,106.272 67.781,109.386 66.553,112.475 65.428,115.529 64.405,118.541 63.486,121.502 62.673,124.404 61.967,127.239 61.367,130.000 60.876,132.678 60.493,135.267 60.219,137.759 60.055,140.148 60.000,142.426 60.055,144.589 60.219,146.629 60.493,148.541 60.876,150.320 61.367,151.962 61.967,153.460 62.673,154.813 63.486,156.015 64.405,157.063 65.428,157.956 66.553,158.689 67.781,159.261 69.109,159.671 70.535,159.918 72.058,160.000 73.676,159.918 75.387,159.671 77.188,159.261 79.079,158.689 81.056,157.956 83.117,157.063 85.259,156.015 87.481,154.813 89.778,153.460 92.149,151.962 94.590,150.320 97.099,148.541 99.673,146.629 102.307,144.589 105.000,142.426 107.748,140.148 110.547,137.759 113.394,135.267 116.285,132.678 119.218,130.000 122.188,127.239 125.193,124.404 128.227,121.502 131.288,118.541 134.372,115.529 137.474,112.475 140.592,109.386 143.722,106.272 146.859,103.140 150.000,100.000 153.141,96.860 156.278,93.728 159.408,90.614 162.526,87.525 165.628,84.471 168.712,81.459 171.773,78.498 174.807,75.596 177.812,72.761 180.782,70.000 183.715,67.322 186.606,64.733 189.453,62.241 192.252,59.852 195.000,57.574 197.693,55.411 200.327,53.371 202.901,51.459 205.410,49.680 207.851,48.038 210.222,46.540 212.519,45.187 214.741,43.985 216.883,42.937 218.944,42.044 220.921,41.311 222.812,40.739 224.613,40.329 226.324,40.082 227.942,40.000 229.465,40.082 230.891,40.329 232.219,40.739 233.447,41.311 234.572,42.044 235.595,42.937 236.514,43.985 237.327,45.187 238.033,46.540 238.633,48.038 239.124,49.680 239.507,51.459 239.781,53.371 239.945,55.411 240.000,57.574 239.945,59.852 239.781,62.241 239.507,64.733 239.124,67.322 238.633,70.000 238.033,72.761 237.327,75.596 236.514,78.498 235.595,81.459 234.572,84.471 233.447,87.525 232.219,90.614 230.891,93.728 229.465,96.860 227.942,100.000 226.324,103.140 224.613,106.272 222.812,109.386 220.921,112.475 218.944,115.529 216.883,118.541 214.741,121.502 212.519,124.404 210.222,127.239 207.851,130.000 205.410,132.678 202.901,135.267 200.327,137.759 197.693,140.148 195.000,142.426 192.252,144.589 189.453,146.629 186.606,148.541 183.715,150.320 180.782,151.962 177.812,153.460 174.807,154.813 171.773,156.015 168.712,157.063 165.628,157.956 162.526,158.689 159.408,159.261 156.278,159.671 153.141,159.918 150.000,160.000 146.859,159.918 143.722,159.671 140.592,159.261 137.474,158.689 134.372,157.956 131.288,157.063 128.227,156.015 125.193,154.813 122.188,153.460 119.218,151.962 116.285,150.320 113.394,148.541 110.547,146.629 107.748,144.589 105.000,142.426 102.307,140.148 99.673,137.759 97.099,135.267 94.590,132.678 92.149,130.000 89.778,127.239 87.481,124.404 85.259,121.502 83.117,118.541 81.056,115.529 79.079,112.475 77.188,109.386 75.387,106.272 73.676,103.140 72.058,100.000 70.535,96.860 69.109,93.728 67.781,90.614 66.553,87.525 65.428,84.471 64.405,81.459 63.486,78.498 62.673,75.596 61.967,72.761 61.367,70.000 60.876,67.322 60.493,64.733 60.219,62.241 60.055,59.852 60.000,57.574 60.055,55.411 60.219,53.371 60.493,51.459 60.876,49.680 61.367,48.038 61.967,46.540 62.673,45.187 63.486,43.985 64.405,42.937 65.428,42.044 66.553,41.311 67.781,40.739 69.109,40.329 70.535,40.082 72.058,40.000 73.676,40.082 75.387,40.329 77.188,40.739 79.079,41.311 81.056,42.044 83.117,42.937 85.259,43.985 87.481,45.187 89.778,46.540 92.149,48.038 94.590,49.680 97.099,51.459 99.673,53.371 102.307,55.411 105.000,57.574 107.748,59.852 110.547,62.241 113.394,64.733 116.285,67.322 119.218,70.000 122.188,72.761 125.193,75.596 128.227,78.498 131.288,81.459 134.372,84.471 137.474,87.525 140.592,90.614 143.722,93.728 146.859,96.860 150.000,100.000&quot;/&gt;&lt;/svg&gt;
+  &lt;div class=&quot;p5-axis-x&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="code-block"><div class="code-head"><span>CSS</span><button class="copy-code" type="button">Copy</button></div><pre><code>/* var(--violet), var(--ease-out)… are design tokens defined once in :root */
+
+.p5-lissajous {
+  position: relative;
+  width: 300px;
+  height: 200px;
+}
+.p5-lissajous svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--violet);
+  stroke-width: 1.5;
+}
+.p5-axis-x {
+  position: absolute;
+  left: 150px;
+  top: 100px;
+  animation: p5-axis-x 4s cubic-bezier(.37, 0, .63, 1) infinite;
+}
+.p5-axis-x i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: p5-axis-y 2.666666667s cubic-bezier(.37, 0, .63, 1) infinite;
+}
+@keyframes p5-axis-x {
+  0%, 50%, 100% { transform: translateX(0); }
+  25% { transform: translateX(90px); }
+  75% { transform: translateX(-90px); }
+}
+@keyframes p5-axis-y {
+  0%, 50%, 100% { transform: translateY(0); }
+  25% { transform: translateY(60px); }
+  75% { transform: translateY(-60px); }
+}</code></pre></div></div></div></article>
+</div></section></main>
+<footer>Web Motion Playground · Part 5 · <code>part5.css</code> + <code>part5.js</code> · <a href="index.html">Parts 1 &amp; 2</a> · <a href="more.html">Part 3</a> · <a href="part4.html">Part 4</a></footer>
+<script src="part5.js"></script>
+</body></html>

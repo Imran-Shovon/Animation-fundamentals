@@ -1,0 +1,214 @@
+/* Part 5 — namespaced motion studies. Shared tokens and layout: styles.css. */
+
+.p5-walk {
+  position: relative;
+  width: 260px;
+  height: 200px;
+}
+.p5-person {
+  position: absolute;
+  left: 125px;
+  top: 32px;
+  animation: p5-bob .6s ease-in-out infinite;
+}
+.p5-person i {
+  position: absolute;
+  display: block;
+  border-radius: 12px;
+  background: var(--cyan);
+}
+.p5-person .p5-head {
+  width: 26px;
+  height: 26px;
+  left: -9px;
+  top: -28px;
+}
+.p5-person .p5-body {
+  width: 12px;
+  height: 58px;
+}
+.p5-person .p5-arm {
+  width: 8px;
+  height: 49px;
+  top: 9px;
+  left: 2px;
+  transform-origin: 50% 4px;
+  animation: p5-stride 1.2s ease-in-out infinite;
+  animation-delay: -.6s;
+}
+.p5-person .p5-leg {
+  width: 10px;
+  height: 44px;
+  top: 51px;
+  left: 1px;
+  transform-origin: 50% 4px;
+  animation: p5-stride 1.2s ease-in-out infinite;
+}
+.p5-leg > i {
+  width: 10px;
+  height: 43px;
+  top: 36px;
+  transform-origin: 50% 4px;
+  animation: p5-knee 1.2s ease-in-out infinite;
+}
+.p5-person .p5-back, .p5-back > i {
+  background: var(--violet);
+  animation-delay: -.6s;
+}
+.p5-person .p5-arm.p5-back {
+  animation-delay: 0s;
+}
+.p5-ground {
+  position: absolute;
+  bottom: 32px;
+  width: 100%;
+  border-bottom: 1px solid var(--muted);
+}
+@keyframes p5-stride {
+  0%, 100% { transform: rotate(-30deg); }
+  50% { transform: rotate(30deg); }
+}
+@keyframes p5-knee {
+  0%, 50%, 100% { transform: rotate(0); }
+  75% { transform: rotate(-55deg); }
+}
+@keyframes p5-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.p5-moire {
+  position: relative;
+  width: 240px;
+  height: 190px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+.p5-moire i {
+  position: absolute;
+  inset: -70px;
+  opacity: .45;
+  background: repeating-linear-gradient(90deg, var(--cyan) 0 1px, transparent 1px 7px);
+}
+.p5-moire i + i {
+  background: repeating-linear-gradient(90deg, var(--violet) 0 1px, transparent 1px 7px);
+  animation: p5-interfere 12s ease-in-out infinite alternate;
+}
+@keyframes p5-interfere {
+  from { transform: rotate(3deg); }
+  to { transform: rotate(18deg); }
+}
+
+.p5-wave {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(88%, 300px);
+  height: 160px;
+  border-left: 2px solid var(--muted);
+  border-right: 2px solid var(--muted);
+}
+.p5-wave i {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: p5-vibrate 2s ease-in-out infinite;
+}
+@keyframes p5-vibrate {
+  0%, 100% { transform: translateY(var(--amp)); }
+  50% { transform: translateY(calc(-1 * var(--amp))); }
+}
+
+.p5-cycloid {
+  position: relative;
+  width: 300px;
+  height: 180px;
+}
+.p5-cycloid svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+}
+.p5-cycloid::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 130px;
+  border-top: 1px solid var(--line);
+}
+.p5-wheel-travel {
+  position: absolute;
+  left: 22px;
+  top: 70px;
+  animation: p5-roll-travel 6s linear infinite;
+}
+.p5-wheel {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border: 2px solid var(--violet);
+  border-radius: 50%;
+  animation: p5-roll-turn 6s linear infinite;
+}
+.p5-wheel i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: 24px;
+  top: 54px;
+  border-radius: 50%;
+  background: var(--pink);
+}
+@keyframes p5-roll-travel {
+  to { transform: translateX(188.49556px); }
+}
+@keyframes p5-roll-turn {
+  to { transform: rotate(360deg); }
+}
+
+.p5-lissajous {
+  position: relative;
+  width: 300px;
+  height: 200px;
+}
+.p5-lissajous svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--violet);
+  stroke-width: 1.5;
+}
+.p5-axis-x {
+  position: absolute;
+  left: 150px;
+  top: 100px;
+  animation: p5-axis-x 4s cubic-bezier(.37, 0, .63, 1) infinite;
+}
+.p5-axis-x i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: p5-axis-y 2.666666667s cubic-bezier(.37, 0, .63, 1) infinite;
+}
+@keyframes p5-axis-x {
+  0%, 50%, 100% { transform: translateX(0); }
+  25% { transform: translateX(90px); }
+  75% { transform: translateX(-90px); }
+}
+@keyframes p5-axis-y {
+  0%, 50%, 100% { transform: translateY(0); }
+  25% { transform: translateY(60px); }
+  75% { transform: translateY(-60px); }
+}
